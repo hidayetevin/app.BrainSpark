@@ -36,7 +36,7 @@ export default function SettingsScreen() {
                 <div className="flex flex-col gap-4 z-10">
                     <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2">{t.settings.general}</div>
 
-                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                    <div style={{ padding: '1rem' }} className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingItem
                             label={t.settings.language}
                             value={settings.language === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'}
@@ -56,7 +56,7 @@ export default function SettingsScreen() {
 
                     <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">{t.settings.gameplay}</div>
 
-                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                    <div style={{ padding: '1rem' }} className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingToggle
                             label={t.settings.errorHighlight}
                             checked={settings.errorHighlight}
@@ -77,10 +77,10 @@ export default function SettingsScreen() {
                             }}
                         />
                     </div>
-
+                    {/* 
                     <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">{t.settings.others}</div>
 
-                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                    <div style={{ padding: '1rem' }} className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingItem
                             label={t.settings.restorePurchases}
                             value={t.settings.restoreButton}
@@ -90,7 +90,7 @@ export default function SettingsScreen() {
                             }}
                             highlight
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <p className="text-center text-xs text-slate-500 font-medium mt-auto px-4 z-10">
