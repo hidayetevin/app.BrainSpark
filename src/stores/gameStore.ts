@@ -70,6 +70,7 @@ const defaultPersistedSlice: PersistedSlice = {
         language: 'tr',
         darkMode: true,
         hasSeenTutorial: false,
+        fontSize: 'medium',
     },
     puzzleStats: {},
     streak: 0,

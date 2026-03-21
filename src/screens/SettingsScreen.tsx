@@ -65,6 +65,15 @@ export default function SettingsScreen() {
                             checked={settings.darkMode}
                             onChange={() => toggleSetting('darkMode')}
                         />
+                        <SettingItem
+                            label="Font Boyutu"
+                            value={settings.fontSize === 'small' ? 'Küçük' : settings.fontSize === 'medium' ? 'Orta' : 'Büyük'}
+                            onClick={() => {
+                                const sizes: ('small' | 'medium' | 'large')[] = ['small', 'medium', 'large']
+                                const next = sizes[(sizes.indexOf(settings.fontSize) + 1) % sizes.length]
+                                updateSettings({ fontSize: next })
+                            }}
+                        />
                     </div>
 
                     <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">Diğer</div>

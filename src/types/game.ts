@@ -58,6 +58,7 @@ export interface GameSettings {
     language: 'tr' | 'en'
     darkMode: boolean
     hasSeenTutorial: boolean
+    fontSize: 'small' | 'medium' | 'large'
 }
 
 /**
