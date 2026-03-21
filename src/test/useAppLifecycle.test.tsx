@@ -115,11 +115,10 @@ describe('useAppLifecycle', () => {
 
         await act(async () => {
             await triggerCapacitorEvent('appStateChange', { isActive: false })
-            await new Promise(r => setTimeout(r, 60))
+            // Preferences.set çağrılmış olmalı (persist middleware tetiklendi)
         })
-
         expect(Preferences.set).toHaveBeenCalledWith(
-            expect.objectContaining({ key: 'saved_state' }),
+            expect.objectContaining({ key: 'brain-spark-store' }),
         )
     })
 

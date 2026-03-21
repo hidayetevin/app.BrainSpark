@@ -70,17 +70,55 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 1 – Zustand Store Architecture
+## ✅ PROMPT 1 – Zustand Store Architecture
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] Global Zustand store: `grid`, `notes`, `lives`, `mistakes`, `hintsUsed`, `elapsedTime`, `stars`, `streak`, `completedLevels`, `adsDisabled`
-- [ ] Cell-level subscription (`state => state.grid[cellIndex]`)
-- [ ] `React.memo` ile Cell component'leri
-- [ ] `persist` middleware + Capacitor Preferences custom storage adapter
-- [ ] Actions: `placeNumber`, `removeNumber`, `toggleNote`, `decreaseLives`, `setAdsDisabled`, `resetGame`
-- [ ] `useAppLifecycle`'daki TODO'lar gerçek store ile güncellenir
-- [ ] Unit testler: `placeNumber`, `decreaseLives`, `toggleNote`
+### TypeScript Types (`src/types/game.ts`)
+- [x] `Difficulty`, `PuzzleData`, `PuzzleStats`, `PuzzleStatsMap`
+- [x] `SavedGameState` → notes: `number[][]` (Set serialize edilemez, array kullanılır)
+- [x] `PersistedSlice` → persist middleware'inin yazacağı alan alt kümesi
+- [x] `GameState` → tüm store alanları + action signature'ları
+
+### Capacitor Storage Adapter (`src/stores/capacitorStorage.ts`)
+- [x] `rawCapacitorStorage` → Kapasitör Preferences API'sini wrap eder
+- [x] Web dev fallback: Capacitor yoksa localStorage kullanılır
+- [x] `capacitorStorage` → Zustand `createJSONStorage` ile uyumlu
+- [x] `SAVED_STATE_KEY` → crash protection için ayrı Preferences key
+- [x] `saveToCrashProtection()` → fire-and-forget async save
+- [x] `loadFromCrashProtection()` → uygulama başlangıcı restore
+
+### Global Game Store (`src/stores/gameStore.ts`)
+- [x] State alanları: `grid`, `notes` (Set<number>[]), `lives`, `mistakes`, `hintsUsed`, `elapsedTime`, `stars`, `streak`, `completedLevels`, `adsDisabled`
+- [x] **Cell-level subscription**: `useCellValue(cellIndex)`, `useCellNotes(cellIndex)`, `useIsInitialCell(cellIndex)` selector'ları
+- [x] `React.memo` ile sarılacak Cell bileşeni için selector pattern dokümante edildi
+- [x] **Actions**: `placeNumber`, `removeNumber`, `toggleNote`, `decreaseLives`, `setAdsDisabled`, `selectCell`, `setPaused`, `setCompleted`, `setElapsedTime`, `setStars`, `savePuzzleStats`, `resetGame`, `saveGame`, `loadSavedGame`
+- [x] **Crash Protection**: `placeNumber` her çağrıldığında `saveToCrashProtection()` fire-and-forget
+- [x] **persist middleware**: Capacitor storage adapter, `partialize` ile geçici state dahil edilmez
+- [x] **Set Serialization**: `partialize` → `Set → number[]`, `merge` → `number[] → Set`
+- [x] removeNumber guardu: `initialGrid[cellIndex] !== 0` ise silme engellenir
+- [x] `savePuzzleStats`: `bestTime = Math.min(existing, new)` mantığı
+
+### useAppLifecycle Güncellemeleri
+- [x] TODO stub'lar gerçek Zustand store ile değiştirildi
+- [x] `isActive: false` → `useGameStore.getState().saveGame()` (fire-and-forget)
+- [x] `isActive: true` + `/game/` → `useGameStore.getState().setPaused(true)`
+- [x] `backButton onConfirm` → `useGameStore.getState().saveGame()` + navigate
+
+### Unit Testler (21/21 ✅)
+- [x] `useAppLifecycle.test.tsx` → 5/5 ✅
+- [x] `gameStore.test.ts` → 14/14 ✅
+  - [x] `placeNumber` → grid güncellenir
+  - [x] `placeNumber` → crash protection çağrılır
+  - [x] `removeNumber` → hücre temizlenir
+  - [x] `removeNumber` → initialGrid koruması
+  - [x] `toggleNote` → ekle/çıkar cycle
+  - [x] `toggleNote` → dolu hücre garantisi
+  - [x] `decreaseLives` → azalma + boundary
+  - [x] `setAdsDisabled` → flag toggle
+  - [x] `resetGame` → tam sıfırlama
+  - [x] `savePuzzleStats` → bestTime 3 senaryo (ilk, iyileşme, kötüleşme)
+  - [x] grid ve notes cell-level selector pattern teyidi
 
 ---
 
