@@ -105,6 +105,7 @@ export const useGameStore = create<GameState>()(
             isPaused: false,
             isCompleted: false,
             selectedCell: null,
+            pencilMode: false,
             errorCells: [],
 
             // ────────────────────────────────────────────────────────────
@@ -241,6 +242,14 @@ export const useGameStore = create<GameState>()(
                 set({ isPaused })
             },
 
+            setPencilMode: (pencilMode: boolean) => {
+                set({ pencilMode })
+            },
+
+            togglePencilMode: () => {
+                set(state => ({ pencilMode: !state.pencilMode }))
+            },
+
             setCompleted: (isCompleted: boolean) => {
                 set({ isCompleted })
             },
@@ -314,6 +323,7 @@ export const useGameStore = create<GameState>()(
                     isPaused: false,
                     isCompleted: false,
                     selectedCell: null,
+                    pencilMode: false,
                     errorCells: [],
                     savedState: null // Yeni oyun başlayınca öncekini sil
                 })

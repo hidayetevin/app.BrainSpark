@@ -51,6 +51,7 @@ export interface UseSudokuEngineReturn {
 
     placeNumber: (cellIndex: number, value: number) => void
     useHint: (cellIndex: number) => void
+    toggleNote: (cellIndex: number, value: number) => void
 
     engine: SudokuCapabilities
 }
@@ -163,6 +164,15 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             if (engine.checkCompletion()) {
                 handleWin()
             }
+        },
+
+        toggleNote: (cellIndex, value) => {
+            const store = useGameStore.getState()
+            AudioService.playClick()
+            if (store.settings.vibrationEnabled) {
+                Haptics.impact({ style: ImpactStyle.Light })
+            }
+            store.toggleNote(cellIndex, value)
         },
 
         engine: engineRef.current,

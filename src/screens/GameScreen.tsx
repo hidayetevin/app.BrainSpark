@@ -30,8 +30,10 @@ export default function GameScreen() {
         mistakes,
         elapsedTime,
         stars,
+        pencilMode,
         resetGame,
         setPaused,
+        togglePencilMode,
         saveGame,
         removeNumber,
     } = useGameStore()
@@ -39,7 +41,7 @@ export default function GameScreen() {
     const [puzzleData, setPuzzleData] = useState<any>(null)
 
     // ERROR FIX: puzzleData parametresini geçiyoruz.
-    const { placeNumber, useHint } = useSudokuEngine(puzzleData)
+    const { placeNumber, useHint, toggleNote } = useSudokuEngine(puzzleData)
 
     const [showExitModal, setShowExitModal] = useState(false)
     const [exitModalAction, setExitModalAction] = useState<{ onConfirm: () => void; onCancel: () => void } | null>(null)
@@ -64,7 +66,12 @@ export default function GameScreen() {
 
     const handleNumberPress = (num: number) => {
         if (selectedCell === null || isPaused || isCompleted || lives === 0) return
-        placeNumber(selectedCell, num)
+
+        if (pencilMode) {
+            toggleNote(selectedCell, num)
+        } else {
+            placeNumber(selectedCell, num)
+        }
     }
 
     const handleErase = () => {
@@ -147,8 +154,8 @@ export default function GameScreen() {
                 onNumberPress={handleNumberPress}
                 onErase={handleErase}
                 onHint={handleHint}
-                pencilMode={false}
-                onTogglePencil={() => { }}
+                pencilMode={pencilMode}
+                onTogglePencil={togglePencilMode}
             />
 
             {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}

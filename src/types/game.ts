@@ -104,6 +104,7 @@ export interface GameState extends PersistedSlice {
     isPaused: boolean
     isCompleted: boolean
     selectedCell: number | null
+    pencilMode: boolean
     /** Çakışan hücrelerin kırmızı vurgusu için geçici state */
     errorCells: number[]
 
@@ -121,6 +122,8 @@ export interface GameState extends PersistedSlice {
     selectCell: (cellIndex: number | null) => void
     setErrorCells: (cells: number[]) => void
     setPaused: (isPaused: boolean) => void
+    setPencilMode: (pencilMode: boolean) => void
+    togglePencilMode: () => void
     setCompleted: (isCompleted: boolean) => void
     setElapsedTime: (time: number) => void
     setStars: (stars: number) => void
