@@ -64,8 +64,8 @@ export default function LevelsScreen() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1, duration: 0.4 }}
                                 key={level.id}
-                                className="relative overflow-hidden glass-strong w-full p-6 text-left transition-transform active:scale-95 group"
-                                style={{ borderRadius: 'var(--radius-xl)' }}
+                                className="relative overflow-hidden glass-strong w-full text-left transition-transform active:scale-95 group"
+                                style={{ borderRadius: 'var(--radius-xl)', padding: '5%' }}
                                 onClick={() => handleNav(`/chapters/${level.id}`)}
                             >
                                 {/* Arkaplan parlaklığı (Gradient glow) */}
