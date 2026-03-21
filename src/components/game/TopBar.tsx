@@ -47,10 +47,10 @@ export function TopBar() {
 
                 {/* Title */}
                 <div className="Tour Title flex flex-col items-center">
-                    <span className="text-sm sm:text-base font-bold text-[var(--text-primary)] tracking-wide">
+                    <span className="font-bold text-[var(--text-primary)] tracking-wide" style={{ fontSize: '12px' }}>
                         {diffStr} - {t.game.chapter} {chapter}
                     </span>
-                    <span className="text-xs sm:text-sm font-medium text-[var(--text-muted)] font-mono tracking-wider">
+                    <span className="font-medium text-[var(--text-muted)] font-mono tracking-wider" style={{ fontSize: '12px' }}>
                         {m}:{s}
                     </span>
                 </div>

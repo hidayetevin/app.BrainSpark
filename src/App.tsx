@@ -31,6 +31,7 @@ function AnimatedRoutes() {
   useAppLifecycle()
 
   const darkMode = useGameStore(state => state.settings.darkMode)
+  const fontSize = useGameStore(state => state.settings.fontSize)
 
   // Reklam yöneticisini, Ses servisini ve IAP entegrasyonunu başlat
   useEffect(() => {
@@ -48,6 +49,16 @@ function AnimatedRoutes() {
       document.documentElement.classList.remove('dark')
     }
   }, [darkMode])
+
+  // Font Size Sync
+  useEffect(() => {
+    const sizeMap = {
+      small: '14px',
+      medium: '16px',
+      large: '18px'
+    }
+    document.documentElement.style.fontSize = sizeMap[fontSize] || '16px'
+  }, [fontSize])
 
   return (
     <div className="flex flex-col h-[100dvh] w-full bg-[var(--surface-bg)] overflow-hidden">
