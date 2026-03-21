@@ -6,10 +6,12 @@ import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
 import { AdManager } from '@/services/AdManager'
 import { Capacitor } from '@capacitor/core'
+import { useTranslation } from '@/locales/i18n'
 
 export default function HomeScreen() {
     const navigate = useNavigate()
     const { savedState } = useGameStore()
+    const { t } = useTranslation()
 
     const handleNav = (path: string) => {
         AudioService.playClick()
@@ -49,7 +51,7 @@ export default function HomeScreen() {
                             Brain Spark
                         </h1>
                         <p className="text-sm text-indigo-200/80 font-medium tracking-wide">
-                            Zihninizi Zorlayan Sudoku
+                            {t.home.subtitle}
                         </p>
                     </div>
                 </motion.div>
@@ -77,7 +79,7 @@ export default function HomeScreen() {
                             onClick={() => handleNav(`/game/${savedState.difficulty}/${savedState.chapter}`)}
                         >
                             <div className="absolute inset-0 bg-white/30 translate-y-8 group-hover:translate-y-0 transition-transform blur-md" />
-                            <span className="relative z-10 flex items-center gap-2">▶ Kaldığın Yerden</span>
+                            <span className="relative z-10 flex items-center gap-2">{t.home.resume}</span>
                         </motion.button>
                     )}
 
@@ -89,7 +91,7 @@ export default function HomeScreen() {
                         className="w-full py-4 text-lg bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-black rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                         onClick={() => handleNav('/levels')}
                     >
-                        🎮 Yeni Oyun
+                        {t.home.newGame}
                     </motion.button>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -101,7 +103,7 @@ export default function HomeScreen() {
                             onClick={() => handleNav('/daily')}
                         >
                             <span className="text-2xl drop-shadow-md">📅</span>
-                            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Günün<br />Görevi</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-slate-300 whitespace-pre">{t.home.dailyChallenge}</span>
                         </motion.button>
 
                         <motion.button
@@ -112,7 +114,7 @@ export default function HomeScreen() {
                             onClick={() => handleNav('/how-to-play')}
                         >
                             <span className="text-2xl drop-shadow-md">📖</span>
-                            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Öğretici</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">{t.home.tutorial}</span>
                         </motion.button>
                     </div>
 
@@ -125,7 +127,7 @@ export default function HomeScreen() {
                         onClick={() => handleNav('/settings')}
                     >
                         <span className="text-xl">⚙️</span>
-                        <span className="font-bold">Ayarlar</span>
+                        <span className="font-bold">{t.home.settings}</span>
                     </motion.button>
                 </motion.div>
 

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import Joyride, { STATUS } from 'react-joyride'
 import type { Step, CallBackProps } from 'react-joyride'
 import { useGameStore } from '@/stores/gameStore'
+import { useTranslation } from '@/locales/i18n'
 
 export function TutorialOverlay() {
     const { settings, updateSettings } = useGameStore()
+    const { t } = useTranslation() // Hook kullanımı
     const [run, setRun] = useState(false)
 
     useEffect(() => {
@@ -18,23 +20,23 @@ export function TutorialOverlay() {
     const steps: Step[] = [
         {
             target: 'body',
-            content: 'Brain Spark Sudoku\'ya hoş geldin! Hadi nasıl oynandığına hızlıca bakalım.',
+            content: t.tutorial.welcome,
             placement: 'center',
             disableBeacon: true,
         },
         {
             target: '.tour-step-grid',
-            content: 'Amacın 9x9 luk alanı sayılarla doldurmak. Ancak her satır, her sütun ve her 3x3 lük blokta 1\'den 9\'a kadar sayılar yalnızca BİR kez kullanılabilir!',
+            content: t.tutorial.goal,
             placement: 'bottom',
         },
         {
             target: '.tour-step-pencil',
-            content: 'Emin olmadığın durumlarda Not (Kalem) modunu açarak hücrelere küçük ihtimaller yazabilirsin. Mantık yürütmek için harikadır!',
+            content: t.tutorial.pencil,
             placement: 'top',
         },
         {
             target: '.tour-step-lives',
-            content: 'Dikkat et, kural dışı veya hatalı bir sayı yerleştirdiğinde Can kaybedersin. 3 defa hata yaparsan oyun biter. Bol şans!',
+            content: t.tutorial.lives,
             placement: 'bottom-start',
         }
     ]
@@ -56,7 +58,7 @@ export function TutorialOverlay() {
             steps={steps}
             run={run}
             continuous
-            showProgress
+            showProgress={false} // "Step 1 of 4" gibi İngilizce kalabilen yazıyı gizle
             showSkipButton
             callback={handleJoyrideCallback}
             styles={{
@@ -83,11 +85,11 @@ export function TutorialOverlay() {
                 }
             }}
             locale={{
-                back: 'Geri',
-                close: 'Kapat',
-                last: 'Anladım!',
-                next: 'İleri',
-                skip: 'Geç'
+                back: t.tutorial.back,
+                close: t.tutorial.close,
+                last: t.tutorial.last,
+                next: t.tutorial.next,
+                skip: t.tutorial.skip,
             }}
         />
     )

@@ -3,16 +3,18 @@ import { useGameStore } from '@/stores/gameStore'
 import { ArrowLeftIcon, HeartIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
+import { useTranslation } from '@/locales/i18n'
 
 export function TopBar() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { difficulty, chapter, lives, elapsedTime, isPaused, setPaused } = useGameStore()
 
     // Saniye → MM:SS formatı
     const m = Math.floor(elapsedTime / 60).toString().padStart(2, '0')
     const s = (elapsedTime % 60).toString().padStart(2, '0')
 
-    const diffStr = difficulty === 'easy' ? 'Kolay' : difficulty === 'medium' ? 'Orta' : 'Zor'
+    const diffStr = t.game[difficulty as keyof typeof t.game] || difficulty
 
     // Back Button -> Confirm Modal veya Quit (Şimdilik geçici window.confirm, PROMPT 9'da değişecek)
     const handleBack = () => {
@@ -38,15 +40,15 @@ export function TopBar() {
                 <button
                     onClick={handleBack}
                     className="btn btn-ghost px-2 py-2 text-[var(--text-secondary)] hover:text-[var(--color-primary)] active:scale-95"
-                    aria-label="Geri"
+                    aria-label="Back"
                 >
                     <ArrowLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 {/* Title */}
-                <div className="flex flex-col items-center">
+                <div className="Tour Title flex flex-col items-center">
                     <span className="text-sm sm:text-base font-bold text-[var(--text-primary)] tracking-wide">
-                        {diffStr} - Bölüm {chapter}
+                        {diffStr} - {t.game.chapter} {chapter}
                     </span>
                     <span className="text-xs sm:text-sm font-medium text-[var(--text-muted)] font-mono tracking-wider">
                         {m}:{s}

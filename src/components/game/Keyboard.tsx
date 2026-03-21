@@ -3,6 +3,7 @@ import { useGameStore } from '@/stores/gameStore'
 import clsx from 'clsx'
 import { PencilIcon, LightBulbIcon, BackspaceIcon } from '@heroicons/react/24/outline'
 import { PencilIcon as PencilSolidIcon } from '@heroicons/react/24/solid'
+import { useTranslation } from '@/locales/i18n'
 
 interface KeyboardProps {
     onNumberPress: (num: number) => void
@@ -19,6 +20,7 @@ export function Keyboard({
     pencilMode,
     onTogglePencil,
 }: KeyboardProps) {
+    const { t } = useTranslation()
     const grid = useGameStore(state => state.grid)
 
     // 1-9 sayılarının kullanım miktarlarını hesapla
@@ -38,7 +40,7 @@ export function Keyboard({
                     className="glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 text-indigo-200 hover:text-white transition-colors border border-white/10"
                 >
                     <BackspaceIcon className="w-6 h-6" />
-                    <span className="text-sm font-semibold">Sil</span>
+                    <span className="text-sm font-semibold">{t.game.erase}</span>
                 </motion.button>
 
                 <motion.button
@@ -51,7 +53,7 @@ export function Keyboard({
                 >
                     {pencilMode && <div className="absolute inset-0 bg-indigo-500/10 animate-pulse" />}
                     {pencilMode ? <PencilSolidIcon className="w-6 h-6" /> : <PencilIcon className="w-6 h-6" />}
-                    <span className="text-sm font-semibold">Not</span>
+                    <span className="text-sm font-semibold">{t.game.note}</span>
                 </motion.button>
 
                 <motion.button
@@ -60,7 +62,7 @@ export function Keyboard({
                     className="glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 text-amber-300 hover:text-amber-200 transition-colors border border-amber-500/20"
                 >
                     <LightBulbIcon className="w-6 h-6" />
-                    <span className="text-sm font-semibold">İpucu</span>
+                    <span className="text-sm font-semibold">{t.game.hint}</span>
                 </motion.button>
             </div>
 

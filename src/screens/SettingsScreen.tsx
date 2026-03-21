@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
 import { AdManager } from '@/services/AdManager'
+import { useTranslation } from '@/locales/i18n'
 
 export default function SettingsScreen() {
     const navigate = useNavigate()
     const { settings, updateSettings } = useGameStore()
+    const { t } = useTranslation()
 
     const toggleSetting = (key: keyof typeof settings) => {
         if (typeof settings[key] === 'boolean') {
@@ -28,45 +30,45 @@ export default function SettingsScreen() {
                         onClick={() => navigate(-1)}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <h1 className="text-3xl font-black tracking-tight text-white">Ayarlar</h1>
+                    <h1 className="text-3xl font-black tracking-tight text-white">{t.settings.title}</h1>
                 </header>
 
                 <div className="flex flex-col gap-4 z-10">
-                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2">Genel Ayarlar</div>
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2">{t.settings.general}</div>
 
                     <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingItem
-                            label="Dil"
+                            label={t.settings.language}
                             value={settings.language === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'}
                             onClick={toggleLanguage}
                         />
                         <SettingToggle
-                            label="Ses Efektleri"
+                            label={t.settings.sound}
                             checked={settings.soundEnabled}
                             onChange={() => toggleSetting('soundEnabled')}
                         />
                         <SettingToggle
-                            label="Titreşim (Haptics)"
+                            label={t.settings.vibration}
                             checked={settings.vibrationEnabled}
                             onChange={() => toggleSetting('vibrationEnabled')}
                         />
                     </div>
 
-                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">Oyun İçi Ayarlar</div>
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">{t.settings.gameplay}</div>
 
                     <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingToggle
-                            label="Hata Vurgulama"
+                            label={t.settings.errorHighlight}
                             checked={settings.errorHighlight}
                             onChange={() => toggleSetting('errorHighlight')}
                         />
                         <SettingToggle
-                            label="Karanlık Mod (Dark)"
+                            label={t.settings.darkMode}
                             checked={settings.darkMode}
                             onChange={() => toggleSetting('darkMode')}
                         />
                         <SettingItem
-                            label="Font Boyutu"
+                            label={t.settings.fontSize}
                             value={settings.fontSize === 'small' ? 'Küçük' : settings.fontSize === 'medium' ? 'Orta' : 'Büyük'}
                             onClick={() => {
                                 const sizes: ('small' | 'medium' | 'large')[] = ['small', 'medium', 'large']
@@ -76,15 +78,15 @@ export default function SettingsScreen() {
                         />
                     </div>
 
-                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">Diğer</div>
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">{t.settings.others}</div>
 
                     <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
                         <SettingItem
-                            label="Satın Alımları Geri Yükle"
-                            value="Geri Yükle"
+                            label={t.settings.restorePurchases}
+                            value={t.settings.restoreButton}
                             onClick={() => {
                                 AdManager.restorePurchases()
-                                alert('Satın alım kontrol edildi.')
+                                alert(t.settings.restoreAlert)
                             }}
                             highlight
                         />
