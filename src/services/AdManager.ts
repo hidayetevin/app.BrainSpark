@@ -18,7 +18,7 @@ const PROD_INTERSTITIAL_ID = ENV.VITE_ADMOB_INTERSTITIAL_ID || ENV.REACT_APP_ADM
 const PROD_REWARDED_ID = ENV.VITE_ADMOB_REWARDED_ID || ENV.REACT_APP_ADMOB_REWARDED_ID
 const PROD_BANNER_ID = ENV.VITE_ADMOB_BANNER_ID || ENV.REACT_APP_ADMOB_BANNER_ID
 
-const isTest = !ENV.PROD
+const isTest = !ENV.PROD || ENV.VITE_FORCE_AD_TEST === 'true'
 
 export const AD_RULES = {
     MIN_INTERVAL_MS: 180 * 1000,
@@ -28,37 +28,46 @@ export const AD_RULES = {
 class AdManagerService {
     private lastInterstitialTime: number = 0
     private sessionImpressions: number = 0
+    private initPromise: Promise<void> | null = null
     private isInitialized = false
 
     private interstitialLoaded = false
     private rewardedLoaded = false
 
     async init() {
-        if (Capacitor.getPlatform() === 'web') return
+        if (this.initPromise) return this.initPromise
 
-        try {
-            await AdMob.initialize()
-            this.isInitialized = true
+        this.initPromise = (async () => {
+            if (Capacitor.getPlatform() === 'web') return
 
-            // IAP Kontrolü (HATA FİKSİ: Purchases henüz configure edilmediği için crash yapıyordu)
-            // if (Capacitor.getPlatform() !== 'web') {
-            //    await this.restorePurchases()
-            // }
+            try {
+                // Initialize calls
+                await AdMob.initialize()
+                this.isInitialized = true
 
-            const adsDisabled = useGameStore.getState().adsDisabled
+                const adsDisabled = useGameStore.getState().adsDisabled
 
-            if (!adsDisabled) {
-                this.prepareInterstitial()
-                this.prepareRewarded()
-                this.setupListeners()
+                if (!adsDisabled) {
+                    void this.prepareInterstitial()
+                    void this.prepareRewarded()
+                    this.setupListeners()
+                }
+            } catch (e) {
+                console.warn('AdManager init failed', e)
             }
-        } catch (e) {
-            console.warn('AdManager init failed', e)
-        }
+        })()
+
+        return this.initPromise
+    }
+
+    private async waitInit() {
+        if (this.initPromise) await this.initPromise
+        else await this.init()
     }
 
     async restorePurchases() {
         if (Capacitor.getPlatform() === 'web') return
+        await this.waitInit()
         try {
             const info = await CapacitorPurchases.restorePurchases()
             if (!info || !info.customerInfo) return
@@ -101,12 +110,12 @@ class AdManagerService {
     private setupListeners() {
         AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
             this.interstitialLoaded = false
-            this.prepareInterstitial()
+            void this.prepareInterstitial()
         })
 
         AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
             this.rewardedLoaded = false
-            this.prepareRewarded()
+            void this.prepareRewarded()
         })
     }
 
@@ -121,6 +130,7 @@ class AdManagerService {
     }
 
     async showSmartInterstitial(): Promise<boolean> {
+        await this.waitInit()
         if (!this.canShowInterstitial()) {
             return false
         }
@@ -139,19 +149,22 @@ class AdManagerService {
     }
 
     async showRewarded(): Promise<boolean> {
+        await this.waitInit()
         return new Promise(async (resolve) => {
             if (Capacitor.getPlatform() === 'web') {
                 resolve(true)
                 return
             }
             if (!this.rewardedLoaded) {
+                // Eğer yüklü değilse yüklemeyi tetikle ve bekleme
+                void this.prepareRewarded()
                 resolve(false)
                 return
             }
             let rewarded = false
             const rewardListener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewarded = true })
             const dismissListener = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-                rewardListener.remove(); dismissListener.remove(); resolve(rewarded); this.rewardedLoaded = false; this.prepareRewarded()
+                rewardListener.remove(); dismissListener.remove(); resolve(rewarded); this.rewardedLoaded = false; void this.prepareRewarded()
             })
             try { await AdMob.showRewardVideoAd() } catch (e) { rewardListener.remove(); dismissListener.remove(); resolve(false) }
         })
@@ -159,10 +172,11 @@ class AdManagerService {
 
     // ── Banner ──────────────────────────────────────────────────────────────────
     async showBanner() {
+        await this.waitInit()
         if (!this.isInitialized || useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return
 
-        // EMULATOR CRASH & VISIBILITY FIX (NullPointerException)
-        await new Promise(resolve => setTimeout(resolve, 800))
+        // EMULATOR CRASH & VISIBILITY FIX (Zamanlama için süreyi artırdık)
+        await new Promise(resolve => setTimeout(resolve, 1500))
 
         try {
             await AdMob.showBanner({
@@ -179,6 +193,7 @@ class AdManagerService {
 
     async hideBanner() {
         if (Capacitor.getPlatform() === 'web') return
+        await this.waitInit()
         try {
             await AdMob.hideBanner()
         } catch (e) { }

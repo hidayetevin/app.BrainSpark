@@ -1,8 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
-import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
 import { useTranslation } from '@/locales/i18n'
 
@@ -14,13 +13,6 @@ export default function ChaptersScreen() {
 
     const diffMode = difficulty || 'easy'
     const label = t.game[diffMode as keyof typeof t.game] || diffMode
-
-    useEffect(() => {
-        AdManager.showBanner()
-        return () => {
-            void AdManager.hideBanner()
-        }
-    }, [])
 
     // İlerleme mantığı hesaplanıyor
     const { maxCompletedIndex, statsMap } = useMemo(() => {
@@ -46,7 +38,7 @@ export default function ChaptersScreen() {
 
     return (
         <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)]">
-            <div className="flex flex-col h-full p-6 pb-24 gap-6">
+            <div className="flex flex-col h-full p-6 gap-6 overflow-y-auto">
                 <header className="flex items-center gap-4 pt-2" style={{ paddingTop: '5%' }}>
                     <button className="btn btn-ghost px-3 py-2 rounded-full backdrop-blur-md"
                         onClick={() => navigate(-1)}>

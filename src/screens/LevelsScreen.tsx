@@ -1,11 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
-import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
-import { Capacitor } from '@capacitor/core'
 import { useTranslation } from '@/locales/i18n'
 
 export default function LevelsScreen() {
@@ -18,13 +16,6 @@ export default function LevelsScreen() {
         if (typeof path === 'string') navigate(path)
         else navigate(-1) // handle navigate(-1)
     }
-
-    useEffect(() => {
-        AdManager.showBanner()
-        return () => {
-            void AdManager.hideBanner()
-        }
-    }, [])
 
     const progress = useMemo(() => {
         const counts = { easy: 0, medium: 0, hard: 0 }
@@ -47,7 +38,7 @@ export default function LevelsScreen() {
 
     return (
         <ScreenTransition>
-            <div className="flex flex-col h-full p-6 pb-24 gap-8">
+            <div className="flex flex-col h-full p-6 gap-8 overflow-y-auto">
                 <header className="flex items-center gap-4 pt-2" style={{ paddingTop: '5%' }}>
                     <button className="btn btn-ghost px-3 py-2 rounded-full backdrop-blur-md"
                         onClick={() => handleNav(-1 as any)}>
@@ -104,13 +95,6 @@ export default function LevelsScreen() {
                     })}
                 </div>
             </div>
-
-            {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}
-            {Capacitor.getPlatform() === 'web' && (
-                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase z-20">
-                    — AdMob Banner Placeholder —
-                </div>
-            )}
         </ScreenTransition>
     )
 }

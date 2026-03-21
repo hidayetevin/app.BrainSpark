@@ -18,6 +18,12 @@ import { useGameStore } from '@/stores/gameStore'
  * AnimatedRoutes — AnimatePresence'ı useLocation ile birlikte kullanmak için
  * iç component olarak tanımlanır. (useLocation sadece Router altında çalışır)
  */
+import { GlobalBanner } from '@/components/ads/GlobalBanner'
+
+/**
+ * AnimatedRoutes — AnimatePresence'ı useLocation ile birlikte kullanmak için
+ * iç component olarak tanımlanır. (useLocation sadece Router altında çalışır)
+ */
 function AnimatedRoutes() {
   const location = useLocation()
 
@@ -44,17 +50,25 @@ function AnimatedRoutes() {
   }, [darkMode])
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomeScreen />} />
-        <Route path="/levels" element={<LevelsScreen />} />
-        <Route path="/chapters/:difficulty" element={<ChaptersScreen />} />
-        <Route path="/game/:difficulty/:chapter" element={<GameScreen />} />
-        <Route path="/settings" element={<SettingsScreen />} />
-        <Route path="/how-to-play" element={<HowToPlayScreen />} />
-        <Route path="/daily" element={<DailyScreen />} />
-      </Routes>
-    </AnimatePresence>
+    <div className="flex flex-col h-[100dvh] w-full bg-[var(--surface-bg)] overflow-hidden">
+      {/* Route Content Area (Flex 1, Relative for Absolute Children) */}
+      <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/levels" element={<LevelsScreen />} />
+            <Route path="/chapters/:difficulty" element={<ChaptersScreen />} />
+            <Route path="/game/:difficulty/:chapter" element={<GameScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/how-to-play" element={<HowToPlayScreen />} />
+            <Route path="/daily" element={<DailyScreen />} />
+          </Routes>
+        </AnimatePresence>
+      </div>
+
+      {/* Global Ad Area (Bottom) */}
+      <GlobalBanner />
+    </div>
   )
 }
 
