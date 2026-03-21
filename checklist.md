@@ -255,21 +255,26 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 9 – Game Over Modal, Tutorial, Polishing
+## ✅ PROMPT 9 – Game Over Modal, Tutorial, Polishing
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] Oyun Bitimi (Game Over / Level Complete) Lottie Modalı.
-- [ ] Yeni Başlayanlar İçin Oyun-İçi Etkileşimli Pointer (Tutorial Spotlight).
-- [ ] Haptic Feedback (Titreşim motoru `Capacitor/Haptics` plugin'i ile).
-- [ ] Confetti effect (`canvas-confetti`).
-
+- [x] **Oyun Bitimi (GameOverModal)**: 2 saniye kilitli skip butonu, AdMob Rewarded ile can kazanma (Revive) ve Premium Glassmorphism UI.
+- [x] **Kazanma Ekranı (LevelCompleteModal)**: 1-3 yıldız animasyonu, `canvas-confetti` patlaması, süre ve hata özeti.
+- [x] **Etkileşimli Tutorial (TutorialOverlay)**: `react-joyride` ile Spotlight efekti ("Nasıl Oynanır"dan tetiklenebilir veya ilk girişte otomatik).
+- [x] **Haptic Feedback**: `capacitor/haptics` ile hata (Heavy), doğru yerleştirme (Light) ve kazanma (Vibrate) titreşimleri.
+- [x] **Ses Sistemi (AudioService)**: `Howler.js` tabanlı BGM (Loop) ve SFX (Tık, Başarı, Hata) sesleri. Ayarlara duyarlı dinamik mute/unmute.
 
 ---
 
 ## ⏳ PROMPT 10 – Performance Tests ve Build Pipeline
 
 **Durum: BEKLIYOR**
+
+- [ ] Chrome DevTools Profiling (81 hücre re-render testi).
+- [ ] Asset Optimization (WebP logo, minified audio).
+- [ ] Capacitor Android Production Keystore ve Build ayarları.
+- [ ] Final UI/UX Kontrolü ve Bugfix.
 
 ---
 

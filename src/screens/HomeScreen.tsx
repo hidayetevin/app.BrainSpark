@@ -2,10 +2,16 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
+import { AudioService } from '@/services/AudioService'
 
 export default function HomeScreen() {
     const navigate = useNavigate()
     const { savedState } = useGameStore()
+
+    const handleNav = (path: string) => {
+        AudioService.playClick()
+        navigate(path)
+    }
 
     return (
         <ScreenTransition className="flex flex-col items-center justify-center h-full bg-[var(--surface-bg)] relative overflow-hidden">
@@ -55,7 +61,7 @@ export default function HomeScreen() {
                             whileTap={{ scale: 0.95 }}
                             id="btn-resume"
                             className="relative w-full py-4 text-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 overflow-hidden group"
-                            onClick={() => navigate(`/game/${savedState.difficulty}/${savedState.chapter}`)}
+                            onClick={() => handleNav(`/game/${savedState.difficulty}/${savedState.chapter}`)}
                         >
                             <div className="absolute inset-0 bg-white/30 translate-y-8 group-hover:translate-y-0 transition-transform blur-md" />
                             <span className="relative z-10 flex items-center gap-2">▶ Kaldığın Yerden</span>
@@ -67,7 +73,7 @@ export default function HomeScreen() {
                         whileTap={{ scale: 0.95 }}
                         id="btn-play"
                         className="w-full py-4 text-lg bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-black rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                        onClick={() => navigate('/levels')}
+                        onClick={() => handleNav('/levels')}
                     >
                         🎮 Yeni Oyun
                     </motion.button>
@@ -78,7 +84,7 @@ export default function HomeScreen() {
                             whileTap={{ scale: 0.95 }}
                             id="btn-daily"
                             className="glass-strong flex flex-col items-center justify-center gap-2 h-24 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-orange-300"
-                            onClick={() => navigate('/daily')}
+                            onClick={() => handleNav('/daily')}
                         >
                             <span className="text-2xl drop-shadow-md">📅</span>
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Günün<br />Görevi</span>
@@ -89,7 +95,7 @@ export default function HomeScreen() {
                             whileTap={{ scale: 0.95 }}
                             id="btn-how-to-play"
                             className="glass-strong flex flex-col items-center justify-center gap-2 h-24 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-emerald-300"
-                            onClick={() => navigate('/how-to-play')}
+                            onClick={() => handleNav('/how-to-play')}
                         >
                             <span className="text-2xl drop-shadow-md">📖</span>
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Öğretici</span>
@@ -101,7 +107,7 @@ export default function HomeScreen() {
                         whileTap={{ scale: 0.95 }}
                         id="btn-settings"
                         className="glass-strong flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-slate-300"
-                        onClick={() => navigate('/settings')}
+                        onClick={() => handleNav('/settings')}
                     >
                         <span className="text-xl">⚙️</span>
                         <span className="font-bold">Ayarlar</span>

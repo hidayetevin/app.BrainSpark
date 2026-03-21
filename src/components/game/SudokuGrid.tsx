@@ -50,9 +50,9 @@ export function SudokuGrid() {
     }
 
     return (
-        <div className="flex justify-center items-center w-full max-w-md mx-auto aspect-square p-2">
+        <div className="tour-step-grid flex justify-center items-center w-full max-w-md mx-auto p-2" style={{ aspectRatio: '1/1' }}>
             <div
-                className="w-full h-full grid grid-cols-9 bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden shadow-xl"
+                className="w-full h-full grid grid-cols-9 bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.2)]"
                 style={{ border: '2px solid var(--color-primary)' }}
             >
                 {grid.map((_, index) => (

@@ -56,7 +56,7 @@ export function TopBar() {
                 {/* Stats & Pause */}
                 <div className="flex items-center gap-3">
                     {/* Lives (Hearts) */}
-                    <div className="flex items-center gap-1">
+                    <div className="tour-step-lives flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/10">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <HeartIcon
                                 key={i}

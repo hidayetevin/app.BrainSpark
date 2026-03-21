@@ -57,6 +57,7 @@ export interface GameSettings {
     vibrationEnabled: boolean
     language: 'tr' | 'en'
     darkMode: boolean
+    hasSeenTutorial: boolean
 }
 
 /**
@@ -114,6 +115,7 @@ export interface GameState extends PersistedSlice {
     removeNumber: (cellIndex: number) => void
     toggleNote: (cellIndex: number, value: number) => void
     decreaseLives: () => void
+    setLives: (lives: number) => void
     setAdsDisabled: (value: boolean) => void
     selectCell: (cellIndex: number | null) => void
     setErrorCells: (cells: number[]) => void

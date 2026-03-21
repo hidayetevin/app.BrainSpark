@@ -1,0 +1,2 @@
+This is a placeholder for background music (e.g. bg-music.mp3)
+Replace with actual audio file later.

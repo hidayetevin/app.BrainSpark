@@ -1,0 +1,3 @@
+Placeholder for error sound effect.
+Path: /assets/audio/error.mp3
+Usage: Triggered on user mistakes or invalid moves.

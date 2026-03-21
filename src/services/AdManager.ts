@@ -140,6 +140,46 @@ class AdManagerService {
         }
     }
 
+    async showRewarded(): Promise<boolean> {
+        return new Promise(async (resolve) => {
+            if (Capacitor.getPlatform() === 'web') {
+                console.log('[Mock Web] Rewarded Reklam Gösterildi')
+                resolve(true)
+                return
+            }
+
+            if (!this.rewardedLoaded) {
+                console.warn('Rewarded ad not loaded yet')
+                resolve(false)
+                return
+            }
+
+            let rewarded = false
+
+            // One-time listener for reward
+            const rewardListener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+                rewarded = true
+            })
+
+            const dismissListener = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+                rewardListener.remove()
+                dismissListener.remove()
+                resolve(rewarded)
+                this.rewardedLoaded = false
+                this.prepareRewarded() // Load next
+            })
+
+            try {
+                await AdMob.showRewardVideoAd()
+            } catch (e) {
+                console.warn('Show Rewarded Failed', e)
+                rewardListener.remove()
+                dismissListener.remove()
+                resolve(false)
+            }
+        })
+    }
+
     // ── Banner ──────────────────────────────────────────────────────────────────
     async showBanner() {
         if (useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return

@@ -69,6 +69,7 @@ const defaultPersistedSlice: PersistedSlice = {
         vibrationEnabled: true,
         language: 'tr',
         darkMode: true,
+        hasSeenTutorial: false,
     },
     puzzleStats: {},
     streak: 0,
@@ -175,6 +176,10 @@ export const useGameStore = create<GameState>()(
                     lives: Math.max(0, state.lives - 1),
                     mistakes: state.mistakes + 1,
                 }))
+            },
+
+            setLives: (lives: number) => {
+                set({ lives })
             },
 
             setAdsDisabled: (value: boolean) => {

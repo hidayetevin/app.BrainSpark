@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
+import { useGameStore } from '@/stores/gameStore'
 
 export default function HowToPlayScreen() {
     const navigate = useNavigate()
@@ -46,16 +47,31 @@ export default function HowToPlayScreen() {
                     ))}
                 </div>
 
-                <motion.button
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    id="btn-start-playing"
-                    className="w-full mt-auto py-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-95 transition-all z-10"
-                    onClick={() => navigate('/levels')}
-                >
-                    Maceraya Başla 🚀
-                </motion.button>
+                <div className="mt-auto flex flex-col gap-3 w-full z-10">
+                    <motion.button
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                        className="w-full py-4 rounded-2xl glass border border-white/20 text-emerald-300 font-bold text-lg hover:bg-white/5 active:scale-95 transition-all text-center"
+                        onClick={() => {
+                            useGameStore.getState().updateSettings({ hasSeenTutorial: false })
+                            navigate('/game/easy/1', { replace: true })
+                        }}
+                    >
+                        🎮 İnteraktif Öğreticiyi Başlat
+                    </motion.button>
+
+                    <motion.button
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        id="btn-start-playing"
+                        className="w-full py-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-95 transition-all text-center"
+                        onClick={() => navigate('/levels')}
+                    >
+                        Maceraya Başla 🚀
+                    </motion.button>
+                </div>
             </div>
         </ScreenTransition>
     )

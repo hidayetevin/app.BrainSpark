@@ -45,7 +45,7 @@ export function Keyboard({
                     whileTap={{ scale: 0.92 }}
                     onClick={onTogglePencil}
                     className={clsx(
-                        "glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 transition-all border border-white/10 relative overflow-hidden",
+                        "tour-step-pencil glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 transition-all border border-white/10 relative overflow-hidden",
                         pencilMode ? "bg-indigo-500/30 text-indigo-300 border-indigo-500/50" : "text-indigo-200 hover:text-white"
                     )}
                 >

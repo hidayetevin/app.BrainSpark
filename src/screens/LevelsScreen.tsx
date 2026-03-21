@@ -4,10 +4,17 @@ import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
+import { AudioService } from '@/services/AudioService'
 
 export default function LevelsScreen() {
     const navigate = useNavigate()
     const { puzzleStats } = useGameStore()
+
+    const handleNav = (path: string) => {
+        AudioService.playClick()
+        if (typeof path === 'string') navigate(path)
+        else navigate(-1) // handle navigate(-1)
+    }
 
     useEffect(() => {
         AdManager.showBanner()
@@ -40,7 +47,7 @@ export default function LevelsScreen() {
             <div className="flex flex-col h-full p-6 pb-24 gap-8">
                 <header className="flex items-center gap-4 pt-2">
                     <button className="btn btn-ghost px-3 py-2 rounded-full backdrop-blur-md"
-                        onClick={() => navigate(-1)}>
+                        onClick={() => handleNav(-1 as any)}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
                     <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-white to-gray-400 text-transparent bg-clip-text">Zorluk Seçimi</h1>
@@ -59,7 +66,7 @@ export default function LevelsScreen() {
                                 key={level.id}
                                 className="relative overflow-hidden glass-strong w-full p-6 text-left transition-transform active:scale-95 group"
                                 style={{ borderRadius: 'var(--radius-xl)' }}
-                                onClick={() => navigate(`/chapters/${level.id}`)}
+                                onClick={() => handleNav(`/chapters/${level.id}`)}
                             >
                                 {/* Arkaplan parlaklığı (Gradient glow) */}
                                 <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${level.color} rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity`} />

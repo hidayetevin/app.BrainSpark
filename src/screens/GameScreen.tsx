@@ -5,50 +5,44 @@ import { useGameStore } from '@/stores/gameStore'
 import { useSudokuEngine } from '@/hooks/useSudokuEngine'
 import { AdManager } from '@/services/AdManager'
 
-// Bileşenler
 import { TopBar } from '@/components/game/TopBar'
 import { SudokuGrid } from '@/components/game/SudokuGrid'
 import { Keyboard } from '@/components/game/Keyboard'
+import { GameOverModal } from '@/components/game/GameOverModal'
+import { LevelCompleteModal } from '@/components/game/LevelCompleteModal'
+import { TutorialOverlay } from '@/components/game/TutorialOverlay'
 
-// Gerçek Veri Seti (PROMPT 5 Entegrasyonu)
 import type { PuzzleData } from '@/types/game'
 import puzzlesData from '@/constants/puzzles.json'
 
-/**
- * GameScreen – Oyun Ekranı (PROMPT 4 & 5 Entegrasyonu)
- * Grid, Keyboard ve Engine hook birleşimi.
- */
 export default function GameScreen() {
     const navigate = useNavigate()
     const { difficulty, chapter } = useParams<{ difficulty: string; chapter: string }>()
 
-    // Puzzle Data State
     const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
-
-    // Modlar (Kalem)
     const [pencilMode, setPencilMode] = useState(false)
 
-    // Store'dan gerekli global field'lar
     const {
         elapsedTime,
         setElapsedTime,
         isPaused,
         setPaused,
         isCompleted,
+        lives,
+        setLives,
+        mistakes,
+        stars,
         selectedCell,
-        toggleNote, // Kalem modu
-        removeNumber // Silme tuşu için
+        toggleNote,
+        removeNumber,
+        resetGame
     } = useGameStore()
 
-    // Sudoku Engine
     const { placeNumber, useHint } = useSudokuEngine(puzzleData)
 
-    // 1. Oyunun Yüklenmesi (PROMPT 5)
     useEffect(() => {
         setTimeout(() => {
-            // JSON'daki id formatı: 'easy_001'
             const puzzleId = `${difficulty}_${(chapter || '1').padStart(3, '0')}`
-
             const foundPuzzle = puzzlesData.puzzles.find(p => p.id === puzzleId)
 
             if (!foundPuzzle) {
@@ -60,34 +54,27 @@ export default function GameScreen() {
             setPuzzleData(foundPuzzle as PuzzleData)
 
             const state = useGameStore.getState()
-
-            // Eğer kaydedilmiş oyun bu aynı chapter/difficulty ise devam et, yoksa reset at
             if (state.savedState && state.savedState.chapter === parseInt(chapter || '1') && state.savedState.difficulty === difficulty) {
                 state.resumeSavedGame(foundPuzzle as PuzzleData)
             } else {
                 state.resetGame(foundPuzzle as PuzzleData)
             }
         }, 100)
-        // Sadece component mount edildiğinde
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // 2. Zamanlayıcı (Timer) - Saniye bazlı artış
     useEffect(() => {
-        if (!puzzleData || isPaused || isCompleted) return
+        if (!puzzleData || isPaused || isCompleted || lives === 0) return
 
         const interval = setInterval(() => {
             setElapsedTime(elapsedTime + 1)
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [puzzleData, isPaused, isCompleted, elapsedTime, setElapsedTime])
+    }, [puzzleData, isPaused, isCompleted, lives, elapsedTime, setElapsedTime])
 
-    // 3. App Lifecycle Events (Resume vs)
     useEffect(() => {
-        const handleResume = () => {
-            setPaused(true) // Arka plandan dönünce duraklat
-        }
+        const handleResume = () => setPaused(true)
         const handleBackOnGame = (e: Event) => {
             const { onConfirm } = (e as CustomEvent).detail as { onConfirm: () => void, onCancel: () => void }
 
@@ -106,10 +93,8 @@ export default function GameScreen() {
         }
     }, [navigate, setPaused])
 
-
-    // ── Keyboard Actions ──
     const handleNumberPress = (num: number) => {
-        if (selectedCell === null || isPaused || isCompleted) return
+        if (selectedCell === null || isPaused || isCompleted || lives === 0) return
 
         if (pencilMode) {
             toggleNote(selectedCell, num)
@@ -119,23 +104,21 @@ export default function GameScreen() {
     }
 
     const handleErase = () => {
-        if (selectedCell === null || isPaused || isCompleted) return
+        if (selectedCell === null || isPaused || isCompleted || lives === 0) return
         removeNumber(selectedCell)
     }
 
     const handleHint = () => {
-        if (selectedCell === null || isPaused || isCompleted) return
+        if (selectedCell === null || isPaused || isCompleted || lives === 0) return
         useHint(selectedCell)
     }
 
-    // 4. Bölüm Bittiğinde Reklam Gösterme (PROMPT 6)
     useEffect(() => {
         if (isCompleted) {
             AdManager.showSmartInterstitial()
         }
     }, [isCompleted])
 
-    // Yükleme bekleniyor
     if (!puzzleData) {
         return (
             <ScreenTransition className="flex items-center justify-center h-full">
@@ -145,48 +128,53 @@ export default function GameScreen() {
     }
 
     return (
-        <ScreenTransition>
-            <div className="flex flex-col h-[100dvh] w-full items-center justify-between pb-4">
+        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-4 bg-[var(--surface-bg)]">
+            <TopBar />
 
-                <TopBar />
+            <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[50%]">
+                <SudokuGrid />
 
-                {/* Blur overlay eğer oyunda pause veya tamamlama varsa */}
-                <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[50%]">
-
-                    <SudokuGrid />
-
-                    {(isPaused || isCompleted) && (
-                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm rounded-xl m-4">
-                            {isCompleted ? (
-                                <div className="text-center p-6 glass rounded-2xl animate-in zoom-in w-3/4 max-w-sm">
-                                    <h2 className="text-2xl font-bold text-white mb-2">Tebrikler! 🎉</h2>
-                                    <p className="text-sm text-gray-200 mb-4">Bulmacayı başarıyla çözdünüz!</p>
-                                    <button onClick={() => navigate('/levels')} className="btn btn-primary w-full shadow-lg shadow-indigo-500/30">
-                                        Bölüm Seç
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={() => setPaused(false)}
-                                    className="btn bg-[var(--color-primary)] text-white px-8 py-4 rounded-full text-lg shadow-xl shadow-indigo-500/30 font-bold transition-transform hover:scale-105 active:scale-95"
-                                >
-                                    Devam Et
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                </div>
-
-                <Keyboard
-                    onNumberPress={handleNumberPress}
-                    onErase={handleErase}
-                    onHint={handleHint}
-                    pencilMode={pencilMode}
-                    onTogglePencil={() => setPencilMode(!pencilMode)}
-                />
-
+                {isPaused && !isCompleted && lives > 0 && (
+                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl m-4">
+                        <button
+                            onClick={() => setPaused(false)}
+                            className="btn bg-indigo-500 text-white px-8 py-4 rounded-full text-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] font-bold transition-transform hover:scale-105 active:scale-95"
+                        >
+                            ▶ Devam Et
+                        </button>
+                    </div>
+                )}
             </div>
+
+            <Keyboard
+                onNumberPress={handleNumberPress}
+                onErase={handleErase}
+                onHint={handleHint}
+                pencilMode={pencilMode}
+                onTogglePencil={() => setPencilMode(!pencilMode)}
+            />
+
+            <GameOverModal
+                isVisible={lives === 0}
+                onRestart={() => resetGame(puzzleData)}
+                onHome={() => navigate('/')}
+                onRevive={() => setLives(1)}
+            />
+
+            <LevelCompleteModal
+                isVisible={isCompleted}
+                stars={stars}
+                elapsedTime={elapsedTime}
+                mistakes={mistakes}
+                onNextLevel={() => {
+                    // Quick next level route
+                    const nextChap = parseInt(chapter || '1') + 1
+                    navigate(`/game/${difficulty}/${nextChap}`, { replace: true })
+                    window.location.reload() // Tamamen temiz state için reload
+                }}
+                onHome={() => navigate('/')}
+            />
+            <TutorialOverlay />
         </ScreenTransition>
     )
 }
