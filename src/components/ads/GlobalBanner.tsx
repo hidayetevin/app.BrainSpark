@@ -34,7 +34,7 @@ export function GlobalBanner() {
      */
     if (Capacitor.getPlatform() === 'web') {
         return (
-            <div className="w-full h-[50px] bg-slate-900/90 backdrop-blur-md border-t border-indigo-500/10 flex items-center justify-center text-[10px] text-indigo-300/60 font-mono tracking-widest uppercase shrink-0 transition-all">
+            <div className="w-full h-[50px] glass border-t border-[var(--surface-border)] flex items-center justify-center text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase shrink-0 transition-all">
                 — AdMob Banner Placeholder —
             </div>
         )

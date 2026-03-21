@@ -4,49 +4,62 @@
    Design System Tokens
    ────────────────────────────────────────────── */
 :root {
-  /* Brand Palette */
+  /* Default: Light Mode Tokens */
   --color-primary: #6366f1;
   /* indigo-500 */
   --color-primary-light: #818cf8;
-  /* indigo-400 */
   --color-primary-dark: #4f46e5;
-  /* indigo-600 */
-  --color-accent: #06b6d4;
-  /* cyan-500 */
+  --color-accent: #0ea5e9;
+  /* sky-500 */
   --color-success: #10b981;
-  /* emerald-500 */
   --color-danger: #ef4444;
-  /* red-500 */
   --color-warning: #f59e0b;
-  /* amber-500 */
 
-  /* Surface Colors */
-  --surface-bg: #0f172a;
+  /* Surface & Text */
+  --surface-bg: #f8fafc;
+  /* slate-50 */
+  --surface-card: #ffffff;
+  --surface-overlay: rgba(248, 250, 252, 0.8);
+  --surface-border: #e2e8f0;
+  /* slate-200 */
+
+  --text-primary: #0f172a;
   /* slate-900 */
+  --text-secondary: #475569;
+  /* slate-600 */
+  --text-muted: #94a3b8;
+  /* slate-400 */
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(94, 106, 210, 0.1);
+  --glass-strong-bg: rgba(255, 255, 255, 0.9);
+
+  /* Mixed utilities will be handled via classes below */
+}
+
+.dark {
+  /* Dark Mode tokens (existing colors) */
+  --surface-bg: #0f172a;
   --surface-card: #1e293b;
-  /* slate-800 */
   --surface-overlay: #0f172acc;
   --surface-border: #334155;
-  /* slate-700 */
 
-  /* Text */
   --text-primary: #f8fafc;
-  /* slate-50 */
   --text-secondary: #94a3b8;
-  /* slate-400 */
   --text-muted: #64748b;
-  /* slate-500 */
 
-  /* Typography */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(148, 163, 184, 0.12);
+  --glass-strong-bg: rgba(15, 23, 42, 0.85);
+}
+
+:root {
+  /* Typography & Layout (Persistent) */
   --font-family: 'Inter', system-ui, sans-serif;
-
-  /* Spacing / Radius */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-xl: 28px;
-
-  /* Transitions */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms ease;
