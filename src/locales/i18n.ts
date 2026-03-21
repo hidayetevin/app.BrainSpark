@@ -54,7 +54,9 @@ export const translations = {
             excellent: "Mükemmel!",
             time: "Süre",
             mistakes: "Hata",
-            nextLevel: "Sonraki Bölüm ⏭️"
+            nextLevel: "Sonraki Bölüm ⏭️",
+            selectCellToHint: "İpucu almak için önce boş bir hücre seçin.",
+            ok: "Tamam"
         },
         levels: {
             title: "Zorluk Seçimi",
@@ -137,7 +139,9 @@ export const translations = {
             excellent: "Excellent!",
             time: "Time",
             mistakes: "Mistakes",
-            nextLevel: "Next Level ⏭️"
+            nextLevel: "Next Level ⏭️",
+            selectCellToHint: "Select an empty cell first to get a hint.",
+            ok: "OK"
         },
         levels: {
             title: "Difficulty Selection",

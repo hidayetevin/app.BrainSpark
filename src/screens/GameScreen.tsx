@@ -44,6 +44,8 @@ export default function GameScreen() {
     const { placeNumber, useHint, toggleNote } = useSudokuEngine(puzzleData)
 
     const [showExitModal, setShowExitModal] = useState(false)
+    const [showHintWarning, setShowHintWarning] = useState(false)
+    const [showAdFailed, setShowAdFailed] = useState(false)
     const [exitModalAction, setExitModalAction] = useState<{ onConfirm: () => void; onCancel: () => void } | null>(null)
 
     useEffect(() => {
@@ -79,9 +81,23 @@ export default function GameScreen() {
         removeNumber(selectedCell)
     }
 
-    const handleHint = () => {
-        if (selectedCell === null || isPaused || isCompleted || lives === 0) return
-        useHint(selectedCell)
+    const handleHint = async () => {
+        if (isPaused || isCompleted || lives === 0) return
+
+        if (selectedCell === null) {
+            setShowHintWarning(true)
+            return
+        }
+
+        const currentValue = useGameStore.getState().grid[selectedCell]
+        if (currentValue !== 0) return
+
+        const success = await AdManager.showRewarded()
+        if (success) {
+            useHint(selectedCell)
+        } else {
+            setShowAdFailed(true)
+        }
     }
 
     useEffect(() => {
@@ -129,6 +145,24 @@ export default function GameScreen() {
                         saveGame()
                         navigate('/')
                     }}
+                />
+
+                {/* HINT WARNING MODAL */}
+                <ActionModal
+                    isOpen={showHintWarning}
+                    title={t.game.hint}
+                    message={t.game.selectCellToHint}
+                    confirmLabel={t.game.ok}
+                    onConfirm={() => setShowHintWarning(false)}
+                />
+
+                {/* AD FAILED MODAL */}
+                <ActionModal
+                    isOpen={showAdFailed}
+                    title={t.game.hint}
+                    message={t.game.adFailed}
+                    confirmLabel={t.game.ok}
+                    onConfirm={() => setShowAdFailed(false)}
                 />
 
                 {/* EXIT CONFIRMATION MODAL */}

@@ -58,7 +58,7 @@ export function ActionModal({
                                 </svg>
                             </div>
 
-                            <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
+                            <h3 className="text-2xl font-black text-white mb-2 tracking-tight" style={{ marginTop: '1rem' }}>
                                 {title}
                             </h3>
 
@@ -66,7 +66,7 @@ export function ActionModal({
                                 {message}
                             </p>
 
-                            <div className="flex flex-col gap-3 w-full">
+                            <div className="flex flex-col gap-3 w-full" style={{ marginTop: '1rem' }}>
                                 <button
                                     onClick={onConfirm}
                                     className={`btn w-full py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all ${type === 'danger'
