@@ -49,7 +49,11 @@ export const translations = {
             hard: "Zor",
             erase: "Sil",
             note: "Not",
-            hint: "İpucu"
+            hint: "İpucu",
+            excellent: "Mükemmel!",
+            time: "Süre",
+            mistakes: "Hata",
+            nextLevel: "Sonraki Bölüm ⏭️"
         },
         home: {
             subtitle: "Zihninizi Zorlayan Sudoku",
@@ -108,7 +112,11 @@ export const translations = {
             hard: "Hard",
             erase: "Erase",
             note: "Note",
-            hint: "Hint"
+            hint: "Hint",
+            excellent: "Excellent!",
+            time: "Time",
+            mistakes: "Mistakes",
+            nextLevel: "Next Level ⏭️"
         },
         home: {
             subtitle: "Mind-Bending Sudoku",

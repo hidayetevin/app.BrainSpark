@@ -12,12 +12,14 @@ import { TutorialOverlay } from '@/components/game/TutorialOverlay'
 import { ActionModal } from '@/components/modals/ActionModal'
 import { puzzles } from '@/constants/puzzles.json'
 import { AdManager } from '@/services/AdManager'
+import { useTranslation } from '@/locales/i18n'
 import { Capacitor } from '@capacitor/core'
 import type { Difficulty } from '@/types/game'
 
 export default function GameScreen() {
     const { difficulty, chapter } = useParams<{ difficulty: string; chapter: string }>()
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const puzzleId = `${difficulty}_${chapter?.padStart(3, '0')}`
 
     const {
@@ -111,10 +113,10 @@ export default function GameScreen() {
                 {/* PAUSE MODAL */}
                 <ActionModal
                     isOpen={isPaused && !isCompleted && lives > 0}
-                    title="Oyun Duraklatıldı"
-                    message="İlerlemeniz otomatik olarak kaydedildi. Menüye dönmek veya devam etmek ister misiniz?"
-                    confirmLabel="▶ Devam Et"
-                    cancelLabel="🏠 Ana Menü"
+                    title={t.game.paused}
+                    message={t.game.pauseMessage}
+                    confirmLabel={t.game.resume}
+                    cancelLabel={t.game.menu}
                     onConfirm={() => setPaused(false)}
                     onCancel={() => {
                         saveGame()
@@ -125,10 +127,10 @@ export default function GameScreen() {
                 {/* EXIT CONFIRMATION MODAL */}
                 <ActionModal
                     isOpen={showExitModal}
-                    title="Menüye Dönülsün mü?"
-                    message="Mevcut oyununuz kaydedilecek. Daha sonra devam edebilirsiniz."
-                    confirmLabel="Evet, Çık"
-                    cancelLabel="Hayır, Kal"
+                    title={t.game.exitTitle}
+                    message={t.game.exitMessage}
+                    confirmLabel={t.game.exitConfirm}
+                    cancelLabel={t.game.exitCancel}
                     type="danger"
                     onConfirm={() => {
                         setShowExitModal(false)

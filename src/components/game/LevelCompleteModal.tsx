@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { AudioService } from '@/services/AudioService'
+import { useTranslation } from '@/locales/i18n'
 
 interface LevelCompleteModalProps {
     isVisible: boolean
@@ -20,6 +21,7 @@ export function LevelCompleteModal({
     onNextLevel,
     onHome,
 }: LevelCompleteModalProps) {
+    const { t } = useTranslation()
     const [animatedStars, setAnimatedStars] = useState(0)
 
     useEffect(() => {
@@ -73,7 +75,7 @@ export function LevelCompleteModal({
                         className="glass-strong rounded-[2.5rem] p-8 flex flex-col items-center max-w-sm w-full shadow-[0_0_50px_rgba(252,211,77,0.2)] border border-amber-500/20"
                     >
                         <h2 className="text-4xl font-black bg-gradient-to-r from-amber-200 to-yellow-500 text-transparent bg-clip-text mb-6">
-                            Mükemmel!
+                            {t.game.excellent}
                         </h2>
 
                         {/* Stars Container */}
@@ -97,12 +99,12 @@ export function LevelCompleteModal({
                             <div className="glass flex flex-col items-center justify-center p-4 rounded-2xl border border-white/5">
                                 <span className="text-3xl mb-1">⏱️</span>
                                 <span className="text-xl font-bold text-slate-200">{m}:{s}</span>
-                                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">Süre</span>
+                                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">{t.game.time}</span>
                             </div>
                             <div className="glass flex flex-col items-center justify-center p-4 rounded-2xl border border-white/5">
                                 <span className="text-3xl mb-1">❌</span>
                                 <span className="text-xl font-bold text-slate-200">{mistakes}</span>
-                                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">Hata</span>
+                                <span className="text-[10px] text-slate-400 uppercase tracking-widest font-black">{t.game.mistakes}</span>
                             </div>
                         </div>
 
@@ -113,14 +115,14 @@ export function LevelCompleteModal({
                                 onClick={onNextLevel}
                                 className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-lg shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-[1.02] transition-all"
                             >
-                                Sonraki Bölüm ⏭️
+                                {t.game.nextLevel}
                             </motion.button>
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onHome}
                                 className="w-full py-4 rounded-2xl glass-strong border border-white/10 text-slate-300 font-bold hover:bg-white/5 transition-colors"
                             >
-                                Ana Menü
+                                {t.game.menu}
                             </motion.button>
                         </div>
                     </motion.div>

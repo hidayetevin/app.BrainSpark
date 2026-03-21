@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AdManager } from '@/services/AdManager'
+import { useTranslation } from '@/locales/i18n'
 
 interface GameOverModalProps {
     isVisible: boolean
@@ -10,6 +11,7 @@ interface GameOverModalProps {
 }
 
 export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOverModalProps) {
+    const { t } = useTranslation()
     // 2 Saniye kuralı için state
     const [showSkipButtons, setShowSkipButtons] = useState(false)
     const [adFailed, setAdFailed] = useState(false)
@@ -72,9 +74,9 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                             <span className="text-5xl">💔</span>
                         </div>
 
-                        <h2 className="text-3xl font-black text-white mb-2">Oyun Bitti</h2>
+                        <h2 className="text-3xl font-black text-white mb-2">{t.game.gameOver}</h2>
                         <p className="text-center text-slate-300 font-medium mb-8">
-                            Tüm canlarını tükettin. {adFailed ? 'Reklam yüklenemedi.' : 'Pes etmek yok!'}
+                            {t.game.gameOverMessage} {adFailed ? t.game.adFailed : t.game.pesEtmekYok}
                         </p>
 
                         <div className="flex flex-col gap-3 w-full">
@@ -88,7 +90,7 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                                     {adLoading ? (
                                         <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     ) : (
-                                        <><span>🎥</span> İzle & Devam Et</>
+                                        <>{t.game.revive}</>
                                     )}
                                 </motion.button>
                             )}
@@ -104,13 +106,13 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                                             onClick={onRestart}
                                             className="w-full py-4 rounded-2xl glass border border-white/10 text-slate-200 font-bold hover:bg-white/5 transition-colors"
                                         >
-                                            🔄 Yeniden Başla
+                                            {t.game.restart}
                                         </button>
                                         <button
                                             onClick={onHome}
                                             className="w-full py-4 rounded-2xl glass border border-white/10 text-rose-400 font-bold hover:bg-white/5 transition-colors"
                                         >
-                                            ❌ Ana Menü
+                                            {t.game.menu}
                                         </button>
                                     </motion.div>
                                 )}
