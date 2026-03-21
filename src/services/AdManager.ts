@@ -4,14 +4,15 @@ import { CapacitorPurchases } from '@capgo/capacitor-purchases'
 import { useGameStore } from '@/stores/gameStore'
 
 const TEST_INTERSTITIAL_ID = Capacitor.getPlatform() === 'ios'
-    ? 'ca-app-pub-3940256099942544/4411468910' // iOS Test Interstitial
-    : 'ca-app-pub-3940256099942544/1033173712' // Android Test Interstitial
+    ? 'ca-app-pub-3940256099942544/4411468910'
+    : 'ca-app-pub-3940256099942544/1033173712'
 
 const TEST_REWARDED_ID = Capacitor.getPlatform() === 'ios'
-    ? 'ca-app-pub-3940256099942544/1712485313' // iOS Test Rewarded
-    : 'ca-app-pub-3940256099942544/5224354917' // Android Test Rewarded
+    ? 'ca-app-pub-3940256099942544/1712485313'
+    : 'ca-app-pub-3940256099942544/5224354917'
 
-// Vite env fallback desteği (REACT_APP / VITE)
+const TEST_BANNER_ID = 'ca-app-pub-3940256099942544/6300978111'
+
 const ENV = import.meta.env
 const PROD_INTERSTITIAL_ID = ENV.VITE_ADMOB_INTERSTITIAL_ID || ENV.REACT_APP_ADMOB_INTERSTITIAL_ID
 const PROD_REWARDED_ID = ENV.VITE_ADMOB_REWARDED_ID || ENV.REACT_APP_ADMOB_REWARDED_ID
@@ -19,7 +20,6 @@ const PROD_BANNER_ID = ENV.VITE_ADMOB_BANNER_ID || ENV.REACT_APP_ADMOB_BANNER_ID
 
 const isTest = !ENV.PROD
 
-// SMART INTERSTITIAL SABİTLERİ (TEST EDILEBILIR OLMAK ICIN EXPORT EDIYORUZ)
 export const AD_RULES = {
     MIN_INTERVAL_MS: 180 * 1000,
     MAX_SESSION_IMPRESSIONS: 6
@@ -28,6 +28,7 @@ export const AD_RULES = {
 class AdManagerService {
     private lastInterstitialTime: number = 0
     private sessionImpressions: number = 0
+    private isInitialized = false
 
     private interstitialLoaded = false
     private rewardedLoaded = false
@@ -37,19 +38,16 @@ class AdManagerService {
 
         try {
             await AdMob.initialize()
+            this.isInitialized = true
 
             // IAP Kontrolü (HATA FİKSİ: Purchases henüz configure edilmediği için crash yapıyordu)
             // if (Capacitor.getPlatform() !== 'web') {
             //    await this.restorePurchases()
             // }
 
-            if (useGameStore.getState().settings?.errorHighlight !== undefined) {
-                // Tam AdFree check
-            }
             const adsDisabled = useGameStore.getState().adsDisabled
 
             if (!adsDisabled) {
-                // App ilk açılış pooling
                 this.prepareInterstitial()
                 this.prepareRewarded()
                 this.setupListeners()
@@ -59,11 +57,9 @@ class AdManagerService {
         }
     }
 
-    // ── IAP (Remove Ads) ────────────────────────────────────────────────────────
     async restorePurchases() {
         if (Capacitor.getPlatform() === 'web') return
         try {
-            // EKSTRA GÜVENLİK: Eğer satın alma eklentisi henüz hazır değilse sessizce çık
             const info = await CapacitorPurchases.restorePurchases()
             if (!info || !info.customerInfo) return
 
@@ -76,7 +72,6 @@ class AdManagerService {
         }
     }
 
-    // ── Pooling Logics ──────────────────────────────────────────────────────────
     private async prepareInterstitial() {
         if (this.interstitialLoaded || useGameStore.getState().adsDisabled) return
         try {
@@ -91,7 +86,7 @@ class AdManagerService {
     }
 
     private async prepareRewarded() {
-        if (this.rewardedLoaded) return // Rewarded her halükarda yüklenebilir (kullanıcı kendi tetikler)
+        if (this.rewardedLoaded) return
         try {
             await AdMob.prepareRewardVideoAd({
                 adId: isTest ? TEST_REWARDED_ID : PROD_REWARDED_ID,
@@ -106,12 +101,12 @@ class AdManagerService {
     private setupListeners() {
         AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
             this.interstitialLoaded = false
-            this.prepareInterstitial() // Hemen yenisini yükle
+            this.prepareInterstitial()
         })
 
         AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
             this.rewardedLoaded = false
-            this.prepareRewarded() // Hemen yenisini yükle
+            this.prepareRewarded()
         })
     }
 
@@ -133,10 +128,7 @@ class AdManagerService {
         try {
             if (Capacitor.getPlatform() !== 'web') {
                 await AdMob.showInterstitial()
-            } else {
-                console.log('[Mock Web] Interstitial Reklam Gösterildi')
             }
-
             this.lastInterstitialTime = Date.now()
             this.sessionImpressions++
             return true
@@ -149,55 +141,32 @@ class AdManagerService {
     async showRewarded(): Promise<boolean> {
         return new Promise(async (resolve) => {
             if (Capacitor.getPlatform() === 'web') {
-                console.log('[Mock Web] Rewarded Reklam Gösterildi')
                 resolve(true)
                 return
             }
-
             if (!this.rewardedLoaded) {
-                console.warn('Rewarded ad not loaded yet')
                 resolve(false)
                 return
             }
-
             let rewarded = false
-
-            // One-time listener for reward
-            const rewardListener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
-                rewarded = true
-            })
-
+            const rewardListener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewarded = true })
             const dismissListener = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-                rewardListener.remove()
-                dismissListener.remove()
-                resolve(rewarded)
-                this.rewardedLoaded = false
-                this.prepareRewarded() // Load next
+                rewardListener.remove(); dismissListener.remove(); resolve(rewarded); this.rewardedLoaded = false; this.prepareRewarded()
             })
-
-            try {
-                await AdMob.showRewardVideoAd()
-            } catch (e) {
-                console.warn('Show Rewarded Failed', e)
-                rewardListener.remove()
-                dismissListener.remove()
-                resolve(false)
-            }
+            try { await AdMob.showRewardVideoAd() } catch (e) { rewardListener.remove(); dismissListener.remove(); resolve(false) }
         })
     }
 
     // ── Banner ──────────────────────────────────────────────────────────────────
     async showBanner() {
-        if (useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return
+        if (!this.isInitialized || useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return
 
-        // EMULATOR CRASH FIX (NullPointerException):
-        // Android tarafında WebView tam yerleşmeden reklam çağrılırsa çökebiliyor.
-        // Bu yüzden 600ms bir bekleme ekliyoruz.
-        await new Promise(resolve => setTimeout(resolve, 600))
+        // EMULATOR CRASH & VISIBILITY FIX (NullPointerException)
+        await new Promise(resolve => setTimeout(resolve, 800))
 
         try {
             await AdMob.showBanner({
-                adId: isTest ? 'ca-app-pub-3940256099942544/6300978111' : PROD_BANNER_ID,
+                adId: isTest ? TEST_BANNER_ID : PROD_BANNER_ID,
                 adSize: BannerAdSize.ADAPTIVE_BANNER,
                 position: BannerAdPosition.BOTTOM_CENTER,
                 isTesting: isTest,
