@@ -142,9 +142,14 @@ export const useGameStore = create<GameState>()(
                 set(state => {
                     // Başlangıç hücresi silinemez
                     if (state.initialGrid[cellIndex] !== 0) return state
+
                     const newGrid = state.grid.slice()
                     newGrid[cellIndex] = 0
-                    return { grid: newGrid }
+
+                    const newNotes = state.notes.slice()
+                    newNotes[cellIndex] = new Set<number>()
+
+                    return { grid: newGrid, notes: newNotes }
                 })
             },
 
