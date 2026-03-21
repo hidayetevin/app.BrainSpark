@@ -29,10 +29,9 @@ export default function HomeScreen() {
                     transition={{ delay: 0.1, duration: 0.5, type: 'spring' }}
                     className="flex flex-col items-center gap-4"
                 >
-                    <div className="w-24 h-24 rounded-[2rem] flex items-center justify-center text-5xl shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-white/20 relative"
-                        style={{ background: 'linear-gradient(135deg, #4f46e5, #06b6d4)' }}>
-                        <div className="absolute inset-0 bg-white/20 rounded-[2rem] opacity-0 hover:opacity-100 transition-opacity" />
-                        🧩
+                    <div className="w-24 h-24 rounded-[2rem] flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.4)] border border-white/20 relative overflow-hidden bg-slate-900/40 backdrop-blur-md">
+                        <img src="/logo.png" alt="Brain Spark Logo" className="w-full h-full object-cover scale-110" />
+                        <div className="absolute inset-0 bg-white/20 opacity-0 hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="text-center">
                         <h1 className="text-5xl font-black tracking-tight bg-gradient-to-br from-indigo-200 via-white to-cyan-300 text-transparent bg-clip-text drop-shadow-sm mb-1">
