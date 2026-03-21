@@ -73,6 +73,7 @@ export default function HomeScreen() {
                             whileTap={{ scale: 0.95 }}
                             id="btn-resume"
                             className="relative w-full py-4 text-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 overflow-hidden group"
+                            style={{ padding: '.8rem' }}
                             onClick={() => handleNav(`/game/${savedState.difficulty}/${savedState.chapter}`)}
                         >
                             <div className="absolute inset-0 bg-white/30 translate-y-8 group-hover:translate-y-0 transition-transform blur-md" />
@@ -84,6 +85,7 @@ export default function HomeScreen() {
                         variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}
                         whileTap={{ scale: 0.95 }}
                         id="btn-play"
+                        style={{ padding: '.8rem' }}
                         className="w-full py-4 text-lg bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-black rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                         onClick={() => handleNav('/levels')}
                     >
@@ -118,6 +120,7 @@ export default function HomeScreen() {
                         variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
                         whileTap={{ scale: 0.95 }}
                         id="btn-settings"
+                        style={{ padding: '1rem' }}
                         className="glass-strong flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors text-slate-300"
                         onClick={() => handleNav('/settings')}
                     >
