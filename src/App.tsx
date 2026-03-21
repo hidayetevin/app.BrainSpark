@@ -12,6 +12,7 @@ import { useAppLifecycle } from '@/hooks/useAppLifecycle'
 import { useEffect } from 'react'
 import { AdManager } from '@/services/AdManager'
 import { AudioService } from '@/services/AudioService'
+import { useGameStore } from '@/stores/gameStore'
 
 /**
  * AnimatedRoutes — AnimatePresence'ı useLocation ile birlikte kullanmak için
@@ -23,6 +24,8 @@ function AnimatedRoutes() {
   // App Lifecycle hook'unu burada başlatıyoruz (Router context içinde)
   useAppLifecycle()
 
+  const darkMode = useGameStore(state => state.settings.darkMode)
+
   // Reklam yöneticisini, Ses servisini ve IAP entegrasyonunu başlat
   useEffect(() => {
     AdManager.init()
@@ -30,6 +33,15 @@ function AnimatedRoutes() {
       AudioService.playBgMusic()
     })
   }, [])
+
+  // Dark Mode Sync
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
 
   return (
     <AnimatePresence mode="wait" initial={false}>

@@ -1,106 +1,73 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import ScreenTransition from '@/components/ScreenTransition'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useGameStore } from '@/stores/gameStore'
 import { useSudokuEngine } from '@/hooks/useSudokuEngine'
-import { AdManager } from '@/services/AdManager'
-
-import { TopBar } from '@/components/game/TopBar'
+import ScreenTransition from '@/components/ScreenTransition'
 import { SudokuGrid } from '@/components/game/SudokuGrid'
 import { Keyboard } from '@/components/game/Keyboard'
+import { TopBar } from '@/components/game/TopBar'
 import { GameOverModal } from '@/components/game/GameOverModal'
 import { LevelCompleteModal } from '@/components/game/LevelCompleteModal'
 import { TutorialOverlay } from '@/components/game/TutorialOverlay'
-
-import type { PuzzleData } from '@/types/game'
-import puzzlesData from '@/constants/puzzles.json'
+import { ActionModal } from '@/components/modals/ActionModal'
+import { puzzles } from '@/constants/puzzles.json'
+import { AdManager } from '@/services/AdManager'
+import type { Difficulty } from '@/types/game'
 
 export default function GameScreen() {
-    const navigate = useNavigate()
     const { difficulty, chapter } = useParams<{ difficulty: string; chapter: string }>()
-
-    const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
-    const [pencilMode, setPencilMode] = useState(false)
+    const navigate = useNavigate()
+    const puzzleId = `${difficulty}_${chapter?.padStart(3, '0')}`
 
     const {
-        elapsedTime,
-        setElapsedTime,
-        isPaused,
-        setPaused,
-        isCompleted,
+        grid,
         lives,
-        setLives,
-        mistakes,
-        stars,
+        isPaused,
+        isCompleted,
         selectedCell,
-        toggleNote,
+        mistakes,
+        elapsedTime,
+        hintsUsed,
+        stars,
+        resetGame,
+        setPaused,
+        saveGame,
         removeNumber,
-        resetGame
+        toggleNote,
     } = useGameStore()
 
-    const { placeNumber, useHint } = useSudokuEngine(puzzleData)
+    const { placeNumber, useHint } = useSudokuEngine()
 
+    const [puzzleData, setPuzzleData] = useState<any>(null)
+    const [showExitModal, setShowExitModal] = useState(false)
+    const [exitModalAction, setExitModalAction] = useState<{ onConfirm: () => void; onCancel: () => void } | null>(null)
+
+    //useAppLifecycle event dinleyicisi
     useEffect(() => {
-        setTimeout(() => {
-            const puzzleId = `${difficulty}_${(chapter || '1').padStart(3, '0')}`
-            const foundPuzzle = puzzlesData.puzzles.find(p => p.id === puzzleId)
-
-            if (!foundPuzzle) {
-                console.error(`Bulmaca verisi bulunamadı: ${puzzleId}`)
-                navigate('/')
-                return
-            }
-
-            setPuzzleData(foundPuzzle as PuzzleData)
-
-            const state = useGameStore.getState()
-            if (state.savedState && state.savedState.chapter === parseInt(chapter || '1') && state.savedState.difficulty === difficulty) {
-                state.resumeSavedGame(foundPuzzle as PuzzleData)
-            } else {
-                state.resetGame(foundPuzzle as PuzzleData)
-            }
-        }, 100)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const handleBack = (e: any) => {
+            const { onConfirm, onCancel } = e.detail
+            setExitModalAction({ onConfirm, onCancel })
+            setShowExitModal(true)
+        }
+        window.addEventListener('app:back-on-game', handleBack)
+        return () => window.removeEventListener('app:back-on-game', handleBack)
     }, [])
 
     useEffect(() => {
-        if (!puzzleData || isPaused || isCompleted || lives === 0) return
-
-        const interval = setInterval(() => {
-            setElapsedTime(elapsedTime + 1)
-        }, 1000)
-
-        return () => clearInterval(interval)
-    }, [puzzleData, isPaused, isCompleted, lives, elapsedTime, setElapsedTime])
-
-    useEffect(() => {
-        const handleResume = () => setPaused(true)
-        const handleBackOnGame = (e: Event) => {
-            const { onConfirm } = (e as CustomEvent).detail as { onConfirm: () => void, onCancel: () => void }
-
-            const confirmed = window.confirm('Durduruyorsunuz. Menüye dönmek istiyor musunuz? İlerlemeniz kaydedildi.')
-            if (confirmed) {
-                onConfirm()
-                navigate('/')
-            }
+        const p = (puzzles as any[]).find(it => it.id === puzzleId)
+        if (p) {
+            setPuzzleData(p)
+            resetGame(p as any)
         }
-
-        window.addEventListener('app:resume-on-game', handleResume)
-        window.addEventListener('app:back-on-game', handleBackOnGame)
-        return () => {
-            window.removeEventListener('app:resume-on-game', handleResume)
-            window.removeEventListener('app:back-on-game', handleBackOnGame)
-        }
-    }, [navigate, setPaused])
+    }, [puzzleId, resetGame])
 
     const handleNumberPress = (num: number) => {
         if (selectedCell === null || isPaused || isCompleted || lives === 0) return
 
-        if (pencilMode) {
-            toggleNote(selectedCell, num)
-        } else {
-            placeNumber(selectedCell, num)
-        }
+        // Pencil mode state'ini klavyeden veya store'dan alabiliriz. 
+        // Ancak şu an basitleştirilmiş bir yapı kullanıyoruz.
+        // SudokuEngine hook içindeki placeNumber logic'i otomatik pencil management yapıyor (auto-clean).
+        placeNumber(selectedCell, num)
     }
 
     const handleErase = () => {
@@ -128,37 +95,58 @@ export default function GameScreen() {
     }
 
     return (
-        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-4 bg-[var(--surface-bg)]">
+        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-4 bg-[var(--surface-bg)] overflow-hidden">
             <TopBar />
 
             <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[50%]">
                 <SudokuGrid />
 
-                {isPaused && !isCompleted && lives > 0 && (
-                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl m-4">
-                        <button
-                            onClick={() => setPaused(false)}
-                            className="btn bg-indigo-500 text-white px-8 py-4 rounded-full text-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] font-bold transition-transform hover:scale-105 active:scale-95"
-                        >
-                            ▶ Devam Et
-                        </button>
-                    </div>
-                )}
+                {/* PAUSE MODAL (PROMPT 9) */}
+                <ActionModal
+                    isOpen={isPaused && !isCompleted && lives > 0}
+                    title="Oyun Duraklatıldı"
+                    message="İlerlemeniz otomatik olarak kaydedildi. Menüye dönmek veya devam etmek ister misiniz?"
+                    confirmLabel="▶ Devam Et"
+                    cancelLabel="🏠 Ana Menü"
+                    onConfirm={() => setPaused(false)}
+                    onCancel={() => {
+                        saveGame()
+                        navigate('/')
+                    }}
+                />
+
+                {/* EXIT CONFIRMATION MODAL (Back Button) */}
+                <ActionModal
+                    isOpen={showExitModal}
+                    title="Menüye Dönülsün mü?"
+                    message="Mevcut oyununuz kaydedilecek. Daha sonra devam edebilirsiniz."
+                    confirmLabel="Evet, Çık"
+                    cancelLabel="Hayır, Kal"
+                    type="danger"
+                    onConfirm={() => {
+                        setShowExitModal(false)
+                        exitModalAction?.onConfirm()
+                    }}
+                    onCancel={() => {
+                        setShowExitModal(false)
+                        exitModalAction?.onCancel()
+                    }}
+                />
             </div>
 
             <Keyboard
                 onNumberPress={handleNumberPress}
                 onErase={handleErase}
                 onHint={handleHint}
-                pencilMode={pencilMode}
-                onTogglePencil={() => setPencilMode(!pencilMode)}
+                pencilMode={false}
+                onTogglePencil={() => { }}
             />
 
             <GameOverModal
-                isVisible={lives === 0}
+                isVisible={lives === 0 && !isCompleted}
                 onRestart={() => resetGame(puzzleData)}
                 onHome={() => navigate('/')}
-                onRevive={() => setLives(1)}
+                onRevive={() => useGameStore.getState().setLives(1)}
             />
 
             <LevelCompleteModal
@@ -166,14 +154,14 @@ export default function GameScreen() {
                 stars={stars}
                 elapsedTime={elapsedTime}
                 mistakes={mistakes}
-                onNextLevel={() => {
-                    // Quick next level route
-                    const nextChap = parseInt(chapter || '1') + 1
-                    navigate(`/game/${difficulty}/${nextChap}`, { replace: true })
-                    window.location.reload() // Tamamen temiz state için reload
+                hintsUsed={hintsUsed}
+                onNext={() => {
+                    const nextChapter = (parseInt(chapter || '1') + 1)
+                    navigate(`/game/${difficulty}/${nextChapter}`)
                 }}
                 onHome={() => navigate('/')}
             />
+
             <TutorialOverlay />
         </ScreenTransition>
     )
