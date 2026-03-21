@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
-import { AdManager } from '@/services/AdManager'
 import { useTranslation } from '@/locales/i18n'
 
 export default function SettingsScreen() {
@@ -69,7 +68,7 @@ export default function SettingsScreen() {
                         />
                         <SettingItem
                             label={t.settings.fontSize}
-                            value={settings.fontSize === 'small' ? 'Küçük' : settings.fontSize === 'medium' ? 'Orta' : 'Büyük'}
+                            value={settings.fontSize === 'small' ? t.settings.fontSizeSmall : settings.fontSize === 'medium' ? t.settings.fontSizeMedium : t.settings.fontSizeLarge}
                             onClick={() => {
                                 const sizes: ('small' | 'medium' | 'large')[] = ['small', 'medium', 'large']
                                 const next = sizes[(sizes.indexOf(settings.fontSize) + 1) % sizes.length]
