@@ -44,6 +44,7 @@ export const translations = {
             adFailed: "Reklam yüklenemedi.",
             pesEtmekYok: "Pes etmek yok!",
             chapter: "Bölüm",
+            chapters: "Bölümler",
             easy: "Kolay",
             medium: "Orta",
             hard: "Zor",
@@ -54,6 +55,25 @@ export const translations = {
             time: "Süre",
             mistakes: "Hata",
             nextLevel: "Sonraki Bölüm ⏭️"
+        },
+        levels: {
+            title: "Zorluk Seçimi",
+            easyDesc: "Sakin ve Odaklanmış",
+            mediumDesc: "Zihni Isıtan Zorluk",
+            hardDesc: "Gerçek Dâhiler İçin"
+        },
+        howto: {
+            title: "Nasıl Oynanır?",
+            logicTitle: "Mantığı Anla",
+            logicDesc: "Her satır, her sütun ve her kalın çizgili 3x3 kutuda 1'den 9'a kadar sayılar 1 kez bulunmalı.",
+            noteTitle: "Adayları İşaretle",
+            noteDesc: "Emin olamadığın yerlere kalem modunu açıp not bırakarak ihtimalleri daralt.",
+            limitTitle: "Sınırlarını Bil",
+            limitDesc: "Oyun boyunca 3 kez hata yapma lüksün var. Bitince oyun sona erer.",
+            streakTitle: "Seri Yakala",
+            streakDesc: "Her gün oynayıp alev serini artır. Dünya saatine karşı yarış!",
+            interactive: "🎮 İnteraktif Öğreticiyi Başlat",
+            adventure: "Maceraya Başla 🚀"
         },
         home: {
             subtitle: "Zihninizi Zorlayan Sudoku",
@@ -107,6 +127,7 @@ export const translations = {
             adFailed: "Ad failed to load.",
             pesEtmekYok: "Never give up!",
             chapter: "Chapter",
+            chapters: "Chapters",
             easy: "Easy",
             medium: "Medium",
             hard: "Hard",
@@ -117,6 +138,25 @@ export const translations = {
             time: "Time",
             mistakes: "Mistakes",
             nextLevel: "Next Level ⏭️"
+        },
+        levels: {
+            title: "Difficulty Selection",
+            easyDesc: "Calm and Focused",
+            mediumDesc: "Mind-Warming Difficulty",
+            hardDesc: "For Real Geniuses"
+        },
+        howto: {
+            title: "How to Play?",
+            logicTitle: "Understand the Logic",
+            logicDesc: "Each row, each column, and each 3x3 block must contain the numbers 1 to 9 exactly once.",
+            noteTitle: "Mark Candidates",
+            noteDesc: "Narrow down the possibilities by switching to note mode and leaving notes in places you're not sure about.",
+            limitTitle: "Know your Limits",
+            limitDesc: "You have 3 mistakes allowed during the game. Once they're gone, the game ends.",
+            streakTitle: "Get a Streak",
+            streakDesc: "Play every day to increase your streak. Race against the global clock!",
+            interactive: "🎮 Start Interactive Tutorial",
+            adventure: "Start the Adventure 🚀"
         },
         home: {
             subtitle: "Mind-Bending Sudoku",

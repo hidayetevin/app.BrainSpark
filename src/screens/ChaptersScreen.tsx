@@ -4,14 +4,16 @@ import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
+import { useTranslation } from '@/locales/i18n'
 
 export default function ChaptersScreen() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { difficulty } = useParams<{ difficulty: string }>()
     const { puzzleStats } = useGameStore()
 
     const diffMode = difficulty || 'easy'
-    const label = difficulty === 'easy' ? 'Kolay' : difficulty === 'medium' ? 'Orta' : 'Zor'
+    const label = t.game[diffMode as keyof typeof t.game] || diffMode
 
     useEffect(() => {
         AdManager.showBanner()
@@ -54,7 +56,7 @@ export default function ChaptersScreen() {
                         <h1 className="text-2xl font-black bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
                             {label}
                         </h1>
-                        <p className="text-xs text-indigo-300 font-medium tracking-wider uppercase">Bölümler</p>
+                        <p className="text-xs text-indigo-300 font-medium tracking-wider uppercase">{t.game.chapters}</p>
                     </div>
                 </header>
 

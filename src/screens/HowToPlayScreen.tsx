@@ -2,15 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
+import { useTranslation } from '@/locales/i18n'
 
 export default function HowToPlayScreen() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const steps = [
-        { emoji: '💡', title: 'Mantığı Anla', desc: 'Her satır, her sütun ve her kalın çizgili 3x3 kutuda 1\'den 9\'a kadar sayılar 1 kez bulunmalı.' },
-        { emoji: '🔎', title: 'Adayları İşaretle', desc: 'Emin olamadığın yerlere kalem modunu açıp not bırakarak ihtimalleri daralt.' },
-        { emoji: '❤️', title: 'Sınırlarını Bil', desc: 'Oyun boyunca 3 kez hata yapma lüksün var. Bitince oyun sona erer.' },
-        { emoji: '🔥', title: 'Seri Yakala', desc: 'Her gün oynayıp alev serini artır. Dünya saatine karşı yarış!' }
+        { emoji: '💡', title: t.howto.logicTitle, desc: t.howto.logicDesc },
+        { emoji: '🔎', title: t.howto.noteTitle, desc: t.howto.noteDesc },
+        { emoji: '❤️', title: t.howto.limitTitle, desc: t.howto.limitDesc },
+        { emoji: '🔥', title: t.howto.streakTitle, desc: t.howto.streakDesc }
     ]
 
     return (
@@ -23,7 +25,7 @@ export default function HowToPlayScreen() {
                         onClick={() => navigate(-1)}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <h1 className="text-3xl font-black tracking-tight text-white">Nasıl Oynanır?</h1>
+                    <h1 className="text-3xl font-black tracking-tight text-white">{t.howto.title}</h1>
                 </header>
 
                 <div className="flex flex-col gap-5 z-10 overscroll-contain">
@@ -52,24 +54,26 @@ export default function HowToPlayScreen() {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.6 }}
+                        style={{ height: '3rem' }}
                         className="w-full py-4 rounded-2xl glass border border-white/20 text-emerald-300 font-bold text-lg hover:bg-white/5 active:scale-95 transition-all text-center"
                         onClick={() => {
                             useGameStore.getState().updateSettings({ hasSeenTutorial: false })
                             navigate('/game/easy/1', { replace: true })
                         }}
                     >
-                        🎮 İnteraktif Öğreticiyi Başlat
+                        {t.howto.interactive}
                     </motion.button>
 
                     <motion.button
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.7 }}
+                        style={{ height: '3rem' }}
                         id="btn-start-playing"
                         className="w-full py-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-95 transition-all text-center"
                         onClick={() => navigate('/levels')}
                     >
-                        Maceraya Başla 🚀
+                        {t.howto.adventure}
                     </motion.button>
                 </div>
             </div>

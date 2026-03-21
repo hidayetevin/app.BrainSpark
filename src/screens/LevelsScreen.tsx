@@ -6,9 +6,11 @@ import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
 import { Capacitor } from '@capacitor/core'
+import { useTranslation } from '@/locales/i18n'
 
 export default function LevelsScreen() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const { puzzleStats } = useGameStore()
 
     const handleNav = (path: string) => {
@@ -36,9 +38,9 @@ export default function LevelsScreen() {
     }, [puzzleStats])
 
     const levels = [
-        { id: 'easy', label: 'Kolay', color: 'from-emerald-400 to-emerald-600', emoji: '🌱', desc: 'Sakin ve Odaklanmış' },
-        { id: 'medium', label: 'Orta', color: 'from-amber-400 to-orange-500', emoji: '🔥', desc: 'Zihni Isıtan Zorluk' },
-        { id: 'hard', label: 'Zor', color: 'from-rose-500 to-red-600', emoji: '⚡', desc: 'Gerçek Dâhiler İçin' },
+        { id: 'easy', label: t.game.easy, color: 'from-emerald-400 to-emerald-600', emoji: '🌱', desc: t.levels.easyDesc },
+        { id: 'medium', label: t.game.medium, color: 'from-amber-400 to-orange-500', emoji: '🔥', desc: t.levels.mediumDesc },
+        { id: 'hard', label: t.game.hard, color: 'from-rose-500 to-red-600', emoji: '⚡', desc: t.levels.hardDesc },
     ] as const
 
     const TOTAL_LEVELS = 30 // Her zorluk için 30 bulmaca var
@@ -51,7 +53,7 @@ export default function LevelsScreen() {
                         onClick={() => handleNav(-1 as any)}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-white to-gray-400 text-transparent bg-clip-text">Zorluk Seçimi</h1>
+                    <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-white to-gray-400 text-transparent bg-clip-text">{t.levels.title}</h1>
                 </header>
 
                 <div className="flex flex-col gap-5">
