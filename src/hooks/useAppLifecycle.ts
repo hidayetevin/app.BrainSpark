@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { App as CapacitorApp } from '@capacitor/app'
 import type { PluginListenerHandle } from '@capacitor/core'
 import { useGameStore } from '@/stores/gameStore'
+import { AudioService } from '@/services/AudioService'
 
 /**
  * useAppLifecycle
@@ -38,10 +39,12 @@ export function useAppLifecycle() {
                 'appStateChange',
                 ({ isActive }) => {
                     if (!isActive) {
-                        // Arka plana alındı → oyunu kaydet (fire-and-forget, bloklamaz)
+                        // Arka plana alındı → sessize al ve kaydet
+                        AudioService.pauseBgMusic()
                         useGameStore.getState().saveGame()
                     } else {
-                        // Ön plana döndü
+                        // Ön plana döndü → müziği devam ettir (Eğer ayar açıksa)
+                        AudioService.resumeBgMusic()
                         if (locationRef.current.startsWith('/game/')) {
                             // Oyun ekranındaysa duraklatma modunu aktif et
                             useGameStore.getState().setPaused(true)

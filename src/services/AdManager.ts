@@ -2,6 +2,7 @@ import { AdMob, BannerAdPosition, BannerAdSize, InterstitialAdPluginEvents, Rewa
 import { Capacitor } from '@capacitor/core'
 import { CapacitorPurchases } from '@capgo/capacitor-purchases'
 import { useGameStore } from '@/stores/gameStore'
+import { AudioService } from '@/services/AudioService'
 
 const TEST_INTERSTITIAL_ID = Capacitor.getPlatform() === 'ios'
     ? 'ca-app-pub-3940256099942544/4411468910'
@@ -108,14 +109,30 @@ class AdManagerService {
     }
 
     private setupListeners() {
+        // Interstitial
+        AdMob.addListener(InterstitialAdPluginEvents.Showed, () => {
+            AudioService.pauseBgMusic()
+        })
         AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+            AudioService.resumeBgMusic()
             this.interstitialLoaded = false
             void this.prepareInterstitial()
         })
+        AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, () => {
+            AudioService.resumeBgMusic()
+        })
 
+        // Rewarded
+        AdMob.addListener(RewardAdPluginEvents.Showed, () => {
+            AudioService.pauseBgMusic()
+        })
         AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+            AudioService.resumeBgMusic()
             this.rewardedLoaded = false
             void this.prepareRewarded()
+        })
+        AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => {
+            AudioService.resumeBgMusic()
         })
     }
 

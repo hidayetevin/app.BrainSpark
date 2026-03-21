@@ -72,7 +72,22 @@ class AudioServiceImpl {
 
     playBgMusic() {
         if (!this.bgMusic) return
-        if (!this.bgMusic.playing()) {
+        const { soundEnabled } = useGameStore.getState().settings
+        if (soundEnabled && !this.bgMusic.playing()) {
+            this.bgMusic.play()
+        }
+    }
+
+    pauseBgMusic() {
+        if (this.bgMusic && this.bgMusic.playing()) {
+            this.bgMusic.pause()
+        }
+    }
+
+    resumeBgMusic() {
+        if (!this.bgMusic) return
+        const { soundEnabled } = useGameStore.getState().settings
+        if (soundEnabled && !this.bgMusic.playing()) {
             this.bgMusic.play()
         }
     }
