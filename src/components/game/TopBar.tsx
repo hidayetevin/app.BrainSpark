@@ -31,7 +31,7 @@ export function TopBar() {
     }
 
     return (
-        <header className="flex flex-col gap-2 p-3 sm:p-4 mb-2 z-10 w-full max-w-md mx-auto">
+        <header className="flex flex-col gap-2 p-3 sm:p-4 mb-2 z-10 w-full max-w-md mx-auto" style={{ paddingTop: '5%' }}>
             <div className="flex items-center justify-between">
 
                 {/* Back Button */}
