@@ -38,8 +38,10 @@ class AdManagerService {
         try {
             await AdMob.initialize()
 
-            // IAP Kontrolü
-            await this.restorePurchases()
+            // IAP Kontrolü (HATA FİKSİ: Purchases henüz configure edilmediği için crash yapıyordu)
+            // if (Capacitor.getPlatform() !== 'web') {
+            //    await this.restorePurchases()
+            // }
 
             if (useGameStore.getState().settings?.errorHighlight !== undefined) {
                 // Tam AdFree check
@@ -59,15 +61,18 @@ class AdManagerService {
 
     // ── IAP (Remove Ads) ────────────────────────────────────────────────────────
     async restorePurchases() {
+        if (Capacitor.getPlatform() === 'web') return
         try {
+            // EKSTRA GÜVENLİK: Eğer satın alma eklentisi henüz hazır değilse sessizce çık
             const info = await CapacitorPurchases.restorePurchases()
-            // "pro", "ad_free" gibi entitlement isimlerini projenize göre değiştirebilirsiniz
+            if (!info || !info.customerInfo) return
+
             const isAdFree = info.customerInfo.entitlements.active['ad_free'] !== undefined
             if (isAdFree) {
                 useGameStore.getState().setAdsDisabled(true)
             }
         } catch (e) {
-            console.warn('Purchases restore failed', e)
+            console.warn('Purchases restore failed or not initialized', e)
         }
     }
 

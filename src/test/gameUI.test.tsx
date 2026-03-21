@@ -15,6 +15,7 @@ describe('Game UI Tests (PROMPT 4)', () => {
                 errorHighlight: true,
                 soundEnabled: true,
                 vibrationEnabled: true,
+                fontSize: 'medium',
                 language: 'tr',
                 darkMode: true,
                 hasSeenTutorial: false,
@@ -80,6 +81,7 @@ describe('Game UI Tests (PROMPT 4)', () => {
                 errorHighlight: true,
                 soundEnabled: true,
                 vibrationEnabled: true,
+                fontSize: 'medium',
                 language: 'tr',
                 darkMode: true,
                 hasSeenTutorial: false,
@@ -105,10 +107,11 @@ describe('Game UI Tests (PROMPT 4)', () => {
                 errorHighlight: false,
                 soundEnabled: true,
                 vibrationEnabled: true,
+                fontSize: 'medium',
                 language: 'tr',
                 darkMode: true,
                 hasSeenTutorial: false,
-            } // ama toggle KAPALI
+            }, // ama toggle KAPALI
         })
 
         const { container } = render(<SudokuGrid />)
