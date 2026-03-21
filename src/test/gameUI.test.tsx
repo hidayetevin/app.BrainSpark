@@ -14,7 +14,10 @@ describe('Game UI Tests (PROMPT 4)', () => {
             settings: {
                 errorHighlight: true,
                 soundEnabled: true,
-                vibrationEnabled: true
+                vibrationEnabled: true,
+                language: 'tr',
+                darkMode: true,
+                hasSeenTutorial: false,
             }
         })
     })
@@ -73,7 +76,14 @@ describe('Game UI Tests (PROMPT 4)', () => {
         // Hücre 0 hatalı olsun
         useGameStore.setState({
             errorCells: [0],
-            settings: { errorHighlight: true, soundEnabled: true, vibrationEnabled: true }
+            settings: {
+                errorHighlight: true,
+                soundEnabled: true,
+                vibrationEnabled: true,
+                language: 'tr',
+                darkMode: true,
+                hasSeenTutorial: false,
+            }
         })
 
         // Grid'i render edelim (SudokuGrid 81 tane div/Cell render ediyor, ilk hücre isError prop'u olarak animate div oluşturur)
@@ -91,7 +101,14 @@ describe('Game UI Tests (PROMPT 4)', () => {
     it('SudokuGrid → settings.errorHighlight FALSE ise hata hücresine isError yansımaz', () => {
         useGameStore.setState({
             errorCells: [0], // 0 numaralı hücre hatada
-            settings: { errorHighlight: false, soundEnabled: true, vibrationEnabled: true } // ama toggle KAPALI
+            settings: {
+                errorHighlight: false,
+                soundEnabled: true,
+                vibrationEnabled: true,
+                language: 'tr',
+                darkMode: true,
+                hasSeenTutorial: false,
+            } // ama toggle KAPALI
         })
 
         const { container } = render(<SudokuGrid />)

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import type { Variants } from 'framer-motion'
 import type { ReactNode } from 'react'
 
 /**
@@ -7,7 +8,7 @@ import type { ReactNode } from 'react'
  * - Çıkış: sola doğru (x: 0 → -30%)
  * - Süre: 250ms ease-out
  */
-const screenVariants = {
+const screenVariants: Variants = {
     initial: {
         x: '100%',
         opacity: 0,

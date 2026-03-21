@@ -13,6 +13,8 @@ interface CellProps {
     onSelect: (index: number) => void
 }
 
+const NOTES_LAYOUT = Array.from({ length: 9 }, (_, i) => i + 1)
+
 /**
  * Cell Component – O(1) rendering ile sadece kendi state'ine abone olur.
  * React.memo ile sarıldığı için dışarıdan gelen props değişmezse re-render olmaz.
@@ -79,7 +81,7 @@ function CellComponent({
                 /* 2. Eğer hücre boşsa ve kalem notu varsa, 3x3 minik grid içinde notları göster */
                 notes.size > 0 && (
                     <div className="grid grid-cols-3 grid-rows-3 w-full h-full p-[2px]">
-                        {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => (
+                        {NOTES_LAYOUT.map((num) => (
                             <div
                                 key={num}
                                 className="flex items-center justify-center text-[8px] sm:text-[10px] leading-none"

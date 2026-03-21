@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import Joyride, { Step, CallBackProps, STATUS } from 'react-joyride'
+import Joyride, { STATUS } from 'react-joyride'
+import type { Step, CallBackProps } from 'react-joyride'
 import { useGameStore } from '@/stores/gameStore'
 
 export function TutorialOverlay() {
