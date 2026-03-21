@@ -5,6 +5,7 @@ import ScreenTransition from '@/components/ScreenTransition'
 import { AdManager } from '@/services/AdManager'
 import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
+import { Capacitor } from '@capacitor/core'
 
 export default function LevelsScreen() {
     const navigate = useNavigate()
@@ -101,6 +102,13 @@ export default function LevelsScreen() {
                     })}
                 </div>
             </div>
+
+            {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}
+            {Capacitor.getPlatform() === 'web' && (
+                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase z-20">
+                    — AdMob Banner Placeholder —
+                </div>
+            )}
         </ScreenTransition>
     )
 }

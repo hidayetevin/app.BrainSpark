@@ -189,6 +189,12 @@ class AdManagerService {
     // ── Banner ──────────────────────────────────────────────────────────────────
     async showBanner() {
         if (useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return
+
+        // EMULATOR CRASH FIX (NullPointerException):
+        // Android tarafında WebView tam yerleşmeden reklam çağrılırsa çökebiliyor.
+        // Bu yüzden 600ms bir bekleme ekliyoruz.
+        await new Promise(resolve => setTimeout(resolve, 600))
+
         try {
             await AdMob.showBanner({
                 adId: isTest ? 'ca-app-pub-3940256099942544/6300978111' : PROD_BANNER_ID,

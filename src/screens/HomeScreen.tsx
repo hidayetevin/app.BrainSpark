@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
+import { AdManager } from '@/services/AdManager'
+import { Capacitor } from '@capacitor/core'
 
 export default function HomeScreen() {
     const navigate = useNavigate()
@@ -12,6 +15,15 @@ export default function HomeScreen() {
         AudioService.playClick()
         navigate(path)
     }
+
+    useEffect(() => {
+        // Ekran açıldığında banner reklamı göster
+        AdManager.showBanner()
+        return () => {
+            // Ekrandan çıkıldığında banner reklamı gizle
+            void AdManager.hideBanner()
+        }
+    }, [])
 
     return (
         <ScreenTransition className="flex flex-col items-center justify-center h-full bg-[var(--surface-bg)] relative overflow-hidden">
@@ -113,7 +125,18 @@ export default function HomeScreen() {
                         <span className="font-bold">Ayarlar</span>
                     </motion.button>
                 </motion.div>
+
+                <p className="text-center text-[10px] text-slate-500 font-medium pb-2 opacity-50">
+                    Brain Spark v1.0.0
+                </p>
             </div>
+
+            {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}
+            {Capacitor.getPlatform() === 'web' && (
+                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase z-20">
+                    — AdMob Banner Placeholder —
+                </div>
+            )}
         </ScreenTransition>
     )
 }

@@ -151,7 +151,7 @@ export default function GameScreen() {
 
             {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}
             {Capacitor.getPlatform() === 'web' && (
-                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase mb-4">
+                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase z-20">
                     — AdMob Banner Placeholder —
                 </div>
             )}
