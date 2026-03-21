@@ -122,19 +122,74 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 2 – PuzzleEngine Abstraction
+## ✅ PROMPT 2 – PuzzleEngine Abstraction
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] `PuzzleEngine` interface
-- [ ] `SudokuEngine` class implementasyonu
-- [ ] `useSudokuEngine` hook
+### Interface (`src/engines/PuzzleEngine.ts`)
+- [x] OCP (Open-Closed Principle) uyumlu `PuzzleEngine` interface'i
+- [x] Temel metodlar: `loadPuzzle`, `validateMove`, `checkCompletion`, `getHint`
+- [x] Sudoku'ya özel uzantı: `SudokuCapabilities` (`getConflictingCells`, `getRelatedCells`, vb.)
+
+### Sudoku Motoru (`src/engines/SudokuEngine.ts`)
+- [x] Grid/Board state'i lokal olarak tutulur (framework bağımsız)
+- [x] Geometri yardımcıları (O(1)): `getRow`, `getCol`, `getBlock` vb.
+- [x] `validateMove`: O(27) time complexity ile çakışma kontrolü
+- [x] `checkCompletion`: O(81) tek geçişle solutionGrid ile hızlı kıyaslama (< 2ms)
+- [x] `getConflictingCells`: Çakışan hücre indekslerini döndürür (hata animasyonu için)
+- [x] `getRelatedCells`: Satır, sütun ve bloktaki benzersiz hücreleri hesaplar (vurgu için)
+
+### React Entegrasyon Hook'u (`src/hooks/useSudokuEngine.ts`)
+- [x] Engine instantiate edilip `useRef`'e atanır (re-render'dan korunur)
+- [x] `useEffect` içinden store grid engine'e O(81) sync edilir
+- [x] Metodlara doğrudan erişim sağlanıp dışa aktarılır
+
+### Unit Testler (35/35 ✅)
+- [x] `sudokuEngine.test.ts` eklendi
+- [x] Geometri yardımcıları için %100 kapsama
+- [x] Hamle doğrulamada tüm sınır durumları (kendi hücresi, 0 değeri, tek/çoklu çakışma) test edildi
+- [x] `< 2ms` checkCompletion performans garantisi doğrulandı
 
 ---
 
-## ⏳ PROMPT 3 – Sudoku Engine Hook
+## ✅ PROMPT 3 – Sudoku Engine Hook (İleri Seviye)
+
+**Durum: TAMAMLANDI**
+
+### GameState Genişletmesi (`src/types/game.ts` & `src/stores/gameStore.ts`)
+- [x] O(1) hata takibi için `errorCells: number[]` geçici state'i eklendi (Zustand partialize dışında bırakıldı).
+- [x] İlgili actions yazıldı: `setErrorCells`, `increaseHintsUsed`, `removeValueFromNotes`.
+
+### Yıldız Hesaplama (`src/hooks/useSudokuEngine.ts`)
+- [x] `calculateStars` yardımcı modülü: Hata (≥3 -> 1 yıldız), Limit aşımı, ipucu, ve hata varlığına göre yıldız cezaları. Süre tablosu (Easy: 5dk, Med: 10dk, Hard: 15dk).
+
+### Gelişmiş Hook (`src/hooks/useSudokuEngine.ts`)
+- [x] **`placeNumber`**: 
+  - 0 ise doğrudan sil.
+  - Hatalıysa: `setErrorCells(conflicts)` ile animasyonu tetikle, `decreaseLives`, setTimeout(600ms) ile hücreleri temizle.
+  - Geçerliyse: `store.placeNumber` ve Auto-candidate clean (`store.removeValueFromNotes`).
+  - Anında `checkCompletion()` ve kazanmayı tespit edip store'a işle(`handleWin`).
+- [x] **`useHint`**: 
+  - `getHint` üzerinden çözümü bulur, hatayı engeller (0 değilse çalışır).
+  - İpucu harcamasını kaydeder, sayıyı yerleştirir, kalemi siler, kazanmayı kontrol eder.
+
+---
+
+## ⏳ PROMPT 4 – Game Screen UI & Grid
 
 **Durum: BEKLIYOR**
+
+- [ ] Top Bar (Canlar, Hata Sayısı, Süre, Pause Butonu)
+- [ ] O(1) `memo` ile optimize edilmiş 9x9 CSS Grid (Hücre ve Notlar)
+- [ ] Alt Panel (Kalem toggle, İpucu butonu, Silme)
+- [ ] Virtual Numpad (seçili hücreye rakam basma)
+- [ ] Vurgulamalar:
+    - Seçili hücre
+    - Aynı sayı vurgusu
+    - İlgili Satır/Sütun/Blok highlight
+    - Hata `errorCells` (.pulse-danger)
+
+
 
 ---
 

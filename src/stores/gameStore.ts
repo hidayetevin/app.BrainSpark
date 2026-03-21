@@ -95,6 +95,7 @@ export const useGameStore = create<GameState>()(
             isPaused: false,
             isCompleted: false,
             selectedCell: null,
+            errorCells: [],
 
             // ────────────────────────────────────────────────────────────
             // ACTIONS
@@ -176,6 +177,10 @@ export const useGameStore = create<GameState>()(
                 set({ selectedCell: cellIndex })
             },
 
+            setErrorCells: (cells: number[]) => {
+                set({ errorCells: cells })
+            },
+
             setPaused: (isPaused: boolean) => {
                 set({ isPaused })
             },
@@ -190,6 +195,32 @@ export const useGameStore = create<GameState>()(
 
             setStars: (stars: number) => {
                 set({ stars })
+            },
+
+            increaseHintsUsed: () => {
+                set(state => ({ hintsUsed: state.hintsUsed + 1 }))
+            },
+
+            /**
+             * removeValueFromNotes — Belirtilen hücrelerin notlarından `value`i siler.
+             * Auto-candidate clean (aynı satır/sütun/bloktan kalemi silme) için kullanılır.
+             */
+            removeValueFromNotes: (cells: number[], value: number) => {
+                set(state => {
+                    let changed = false
+                    const newNotes = state.notes.slice()
+
+                    cells.forEach(idx => {
+                        const cellNotes = new Set(newNotes[idx])
+                        if (cellNotes.has(value)) {
+                            cellNotes.delete(value)
+                            newNotes[idx] = cellNotes
+                            changed = true
+                        }
+                    })
+
+                    return changed ? { notes: newNotes } : state
+                })
             },
 
             savePuzzleStats: (puzzleId: string, stats: PuzzleStats) => {
@@ -227,6 +258,7 @@ export const useGameStore = create<GameState>()(
                     isPaused: false,
                     isCompleted: false,
                     selectedCell: null,
+                    errorCells: [],
                 })
             },
 
@@ -285,7 +317,7 @@ export const useGameStore = create<GameState>()(
             /**
              * partialize — Disk'e yazılacak alanları filtreler.
              * notes: Set<number>[] → number[][] dönüşümü burada yapılır.
-             * Geçici state (isPaused, isCompleted, selectedCell, highlights) DIŞARDA.
+             * Geçici state (isPaused, isCompleted, selectedCell, errorCells, vb) DIŞARDA bırakılır.
              */
             partialize: (state): PersistedSlice => ({
                 puzzleStats: state.puzzleStats,

@@ -91,6 +91,8 @@ export interface GameState extends PersistedSlice {
     isPaused: boolean
     isCompleted: boolean
     selectedCell: number | null
+    /** Çakışan hücrelerin kırmızı vurgusu için geçici state */
+    errorCells: number[]
 
     // ── Actions ──────────────────────────────────────────────────
     /**
@@ -103,10 +105,13 @@ export interface GameState extends PersistedSlice {
     decreaseLives: () => void
     setAdsDisabled: (value: boolean) => void
     selectCell: (cellIndex: number | null) => void
+    setErrorCells: (cells: number[]) => void
     setPaused: (isPaused: boolean) => void
     setCompleted: (isCompleted: boolean) => void
     setElapsedTime: (time: number) => void
     setStars: (stars: number) => void
+    increaseHintsUsed: () => void
+    removeValueFromNotes: (cells: number[], value: number) => void
     savePuzzleStats: (puzzleId: string, stats: PuzzleStats) => void
     resetGame: (puzzleData: PuzzleData) => void
     /** Mevcut oyun state'ini arka planda Preferences'a yazar */
