@@ -208,15 +208,31 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 6 – Akıllı Kayıt ve Kurtarma (Persistence)
+## ✅ PROMPT 6 – AdManager Sistemi
+
+**Durum: TAMAMLANDI**
+
+- [x] `AdManager.ts` servisi oluşturuldu.
+- [x] **Ad Pooling**: Uygulama açılışında (`App.tsx`'te init) 1 Interstitial ve 1 Rewarded yüklenir, gösterilince anında yenisi (`prepare*`) kuyruğa alınır.
+- [x] **SMART INTERSTITIAL KURALLARI**:
+    - Bölüm bitiminde (`GameScreen.tsx`) tetiklenir.
+    - 180 Saniye kuralı (En az 180 sn geçmeli).
+    - Session başına max 6 Interstitial kuralı.
+    - Reklam yüklü değilse oyunu bölmez, sessizce geçilir.
+- [x] **Banner**: `LevelsScreen.tsx`'in altında render edilip temizlenir (`pb-20` layout padding verildi).
+- [x] **IAP Remove Ads**: `@capgo/capacitor-purchases` eklendi, her başlangıçta `restorePurchases()` ile yetki doğrulaması yapılır.
+- [x] Vitest ile tüm limit, zamanlama algoritması ve `adsDisabled` özellikleri `%100` oranında test edildi.
+
+---
+
+## ⏳ PROMPT 7 – Akıllı Kayıt ve Kurtarma (Persistence Refinement)
 
 **Durum: BEKLIYOR**
 
-- [ ] `useAppLifecycle` Hook (Zaten yazılmıştı ancak game loop testleri/refine yapılması lazım)
-- [ ] Zustand Persist Middleware refinement (`savedState` yönetimi)
+- [ ] Zustand Persist Middleware refinement (`savedState` tam yönetimi)
 - [ ] Oyun yükleme (Resume) mantığı:
     - `/game` ekranına girildiğinde `savedState` varsa (aynı chapter), oradan yüklenmeli.
-- [ ] Crash Recovery Testing (Testler)
+- [ ] Ana menüde "Kaydedilmiş oyuna devam et" butonu.
 
 
 

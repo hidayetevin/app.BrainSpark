@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
 import { useSudokuEngine } from '@/hooks/useSudokuEngine'
+import { AdManager } from '@/services/AdManager'
 
 // Bileşenler
 import { TopBar } from '@/components/game/TopBar'
@@ -125,6 +126,13 @@ export default function GameScreen() {
         if (selectedCell === null || isPaused || isCompleted) return
         useHint(selectedCell)
     }
+
+    // 4. Bölüm Bittiğinde Reklam Gösterme (PROMPT 6)
+    useEffect(() => {
+        if (isCompleted) {
+            AdManager.showSmartInterstitial()
+        }
+    }, [isCompleted])
 
     // Yükleme bekleniyor
     if (!puzzleData) {

@@ -9,6 +9,8 @@ import SettingsScreen from '@/screens/SettingsScreen'
 import HowToPlayScreen from '@/screens/HowToPlayScreen'
 import DailyScreen from '@/screens/DailyScreen'
 import { useAppLifecycle } from '@/hooks/useAppLifecycle'
+import { useEffect } from 'react'
+import { AdManager } from '@/services/AdManager'
 
 /**
  * AnimatedRoutes — AnimatePresence'ı useLocation ile birlikte kullanmak için
@@ -19,6 +21,11 @@ function AnimatedRoutes() {
 
   // App Lifecycle hook'unu burada başlatıyoruz (Router context içinde)
   useAppLifecycle()
+
+  // Reklam yöneticisini ve IAP entegrasyonunu başlat
+  useEffect(() => {
+    AdManager.init()
+  }, [])
 
   return (
     <AnimatePresence mode="wait" initial={false}>

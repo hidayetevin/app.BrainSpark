@@ -1,12 +1,21 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ScreenTransition from '@/components/ScreenTransition'
+import { AdManager } from '@/services/AdManager'
 
 /**
  * LevelsScreen – Zorluk Seçim Ekranı
- * PROMPT 8'de tam tasarım gelecek.
+ * Banner reklamı burada aktif olur ve padding ayarlanır.
  */
 export default function LevelsScreen() {
     const navigate = useNavigate()
+
+    useEffect(() => {
+        AdManager.showBanner()
+        return () => {
+            AdManager.hideBanner()
+        }
+    }, [])
 
     const levels = [
         { id: 'easy', label: 'Kolay', emoji: '🟢', desc: '45–50 açık hücre' },
@@ -16,7 +25,8 @@ export default function LevelsScreen() {
 
     return (
         <ScreenTransition>
-            <div className="flex flex-col h-full p-6 gap-6">
+            {/* Banner Ad için pb-14 eklendi */}
+            <div className="flex flex-col h-full p-6 pb-20 gap-6">
                 <header className="flex items-center gap-3 pt-2">
                     <button id="btn-back-levels" className="btn btn-ghost px-3 py-2"
                         onClick={() => navigate(-1)}>
@@ -41,13 +51,6 @@ export default function LevelsScreen() {
                             </div>
                         </button>
                     ))}
-                </div>
-
-                {/* Banner Ad placeholder (PROMPT 6) */}
-                <div id="banner-ad-placeholder"
-                    className="mt-auto h-14 rounded-lg flex items-center justify-center text-sm"
-                    style={{ background: 'var(--surface-card)', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)' }}>
-                    Reklam Alanı (PROMPT 6)
                 </div>
             </div>
         </ScreenTransition>
