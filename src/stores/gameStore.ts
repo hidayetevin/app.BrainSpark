@@ -66,6 +66,7 @@ const defaultPersistedSlice: PersistedSlice = {
     settings: {
         errorHighlight: true,
         soundEnabled: true,
+        musicEnabled: true,
         vibrationEnabled: true,
         language: 'tr',
         darkMode: true,
@@ -442,7 +443,7 @@ export const useGameStore = create<GameState>()(
                 const ps = persistedState as PersistedSlice
                 const merged: GameState = {
                     ...currentState,
-                    settings: ps.settings ?? currentState.settings,
+                    settings: { ...currentState.settings, ...(ps.settings || {}) },
                     puzzleStats: ps.puzzleStats ?? currentState.puzzleStats,
                     streak: ps.streak ?? currentState.streak,
                     lastChallengeClaimDate: ps.lastChallengeClaimDate ?? currentState.lastChallengeClaimDate,

@@ -14,6 +14,7 @@ describe('Game UI Tests (PROMPT 4)', () => {
             settings: {
                 errorHighlight: true,
                 soundEnabled: true,
+                musicEnabled: true,
                 vibrationEnabled: true,
                 fontSize: 'medium',
                 language: 'tr',
@@ -80,6 +81,7 @@ describe('Game UI Tests (PROMPT 4)', () => {
             settings: {
                 errorHighlight: true,
                 soundEnabled: true,
+                musicEnabled: true,
                 vibrationEnabled: true,
                 fontSize: 'medium',
                 language: 'tr',
@@ -106,6 +108,7 @@ describe('Game UI Tests (PROMPT 4)', () => {
             settings: {
                 errorHighlight: false,
                 soundEnabled: true,
+                musicEnabled: true,
                 vibrationEnabled: true,
                 fontSize: 'medium',
                 language: 'tr',

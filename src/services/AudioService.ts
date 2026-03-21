@@ -1,4 +1,4 @@
-import { Howl, Howler } from 'howler'
+import { Howl } from 'howler'
 import { useGameStore } from '@/stores/gameStore'
 
 /**
@@ -25,14 +25,11 @@ class AudioServiceImpl {
     async init() {
         if (this.isInitialized) return
 
-        // Global Howler ses seviyesini state'den al
-        this.updateVolume()
-
         this.bgMusic = new Howl({
             src: [this.PATHS.bg],
             loop: true,
             volume: 0.3,
-            html5: true, // Büyük dosyalar için daha iyi
+            html5: true,
             onloaderror: () => console.warn(`Couldn't load ${this.PATHS.bg}`),
             onplayerror: () => console.warn(`Couldn't play ${this.PATHS.bg}`)
         })
@@ -57,23 +54,28 @@ class AudioServiceImpl {
 
         this.isInitialized = true
 
-        // Listen to store changes for volume control
+        // Listen to store changes for fine-grained control
+        let currentMusicEnabled = useGameStore.getState().settings.musicEnabled
+
         useGameStore.subscribe(
             (state) => {
-                Howler.mute(!state.settings.soundEnabled)
+                const newMusic = state.settings.musicEnabled
+                if (newMusic !== currentMusicEnabled) {
+                    currentMusicEnabled = newMusic
+                    if (newMusic) {
+                        this.resumeBgMusic()
+                    } else {
+                        this.pauseBgMusic()
+                    }
+                }
             }
         )
     }
 
-    updateVolume() {
-        const { soundEnabled } = useGameStore.getState().settings
-        Howler.mute(!soundEnabled)
-    }
-
     playBgMusic() {
         if (!this.bgMusic) return
-        const { soundEnabled } = useGameStore.getState().settings
-        if (soundEnabled && !this.bgMusic.playing()) {
+        const { musicEnabled } = useGameStore.getState().settings
+        if (musicEnabled && !this.bgMusic.playing()) {
             this.bgMusic.play()
         }
     }
@@ -86,8 +88,8 @@ class AudioServiceImpl {
 
     resumeBgMusic() {
         if (!this.bgMusic) return
-        const { soundEnabled } = useGameStore.getState().settings
-        if (soundEnabled && !this.bgMusic.playing()) {
+        const { musicEnabled } = useGameStore.getState().settings
+        if (musicEnabled && !this.bgMusic.playing()) {
             this.bgMusic.play()
         }
     }
@@ -99,19 +101,19 @@ class AudioServiceImpl {
     }
 
     playClick() {
-        if (this.clickSound) {
+        if (this.clickSound && useGameStore.getState().settings.soundEnabled) {
             this.clickSound.play()
         }
     }
 
     playSuccess() {
-        if (this.successSound) {
+        if (this.successSound && useGameStore.getState().settings.soundEnabled) {
             this.successSound.play()
         }
     }
 
     playError() {
-        if (this.errorSound) {
+        if (this.errorSound && useGameStore.getState().settings.soundEnabled) {
             this.errorSound.play()
         }
     }

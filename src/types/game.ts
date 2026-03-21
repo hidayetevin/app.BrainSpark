@@ -54,6 +54,7 @@ export interface SavedGameState {
 export interface GameSettings {
     errorHighlight: boolean
     soundEnabled: boolean
+    musicEnabled: boolean
     vibrationEnabled: boolean
     language: 'tr' | 'en'
     darkMode: boolean

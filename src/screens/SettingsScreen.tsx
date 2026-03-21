@@ -42,6 +42,11 @@ export default function SettingsScreen() {
                             onClick={toggleLanguage}
                         />
                         <SettingToggle
+                            label={t.settings.music}
+                            checked={settings.musicEnabled}
+                            onChange={() => toggleSetting('musicEnabled')}
+                        />
+                        <SettingToggle
                             label={t.settings.sound}
                             checked={settings.soundEnabled}
                             onChange={() => toggleSetting('soundEnabled')}
@@ -92,7 +97,16 @@ export default function SettingsScreen() {
                     </div> */}
                 </div>
 
-                <p className="text-center text-xs text-slate-500 font-medium mt-auto px-4 z-10">
+                <div style={{ padding: '1rem' }} className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5 mt-4">
+                    <SettingItem
+                        label={t.settings.privacyPolicy}
+                        value={t.settings.viewButton || 'Görüntüle'}
+                        onClick={() => window.open('/privacy-policy.html', '_blank')}
+                        highlight
+                    />
+                </div>
+
+                <p className="text-center text-xs text-slate-500 font-medium mt-auto px-4 z-10 pb-4">
                     Brain Spark v1.0.0
                 </p>
             </div>

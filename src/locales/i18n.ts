@@ -16,7 +16,10 @@ export const translations = {
         settings: {
             title: "Ayarlar",
             general: "Genel Ayarlar",
+            viewButton: "Görüntüle",
             language: "Dil",
+            privacyPolicy: "Gizlilik Politikası",
+            music: "Müzik",
             sound: "Ses Efektleri",
             vibration: "Titreşim (Haptics)",
             gameplay: "Oyun İçi Ayarlar",
@@ -104,7 +107,10 @@ export const translations = {
         settings: {
             title: "Settings",
             general: "General Settings",
+            viewButton: "View",
             language: "Language",
+            privacyPolicy: "Privacy Policy",
+            music: "Music",
             sound: "Sound Effects",
             vibration: "Vibration (Haptics)",
             gameplay: "In-Game Settings",
