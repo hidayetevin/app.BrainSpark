@@ -15,6 +15,7 @@ const TEST_REWARDED_ID = Capacitor.getPlatform() === 'ios'
 const ENV = import.meta.env
 const PROD_INTERSTITIAL_ID = ENV.VITE_ADMOB_INTERSTITIAL_ID || ENV.REACT_APP_ADMOB_INTERSTITIAL_ID
 const PROD_REWARDED_ID = ENV.VITE_ADMOB_REWARDED_ID || ENV.REACT_APP_ADMOB_REWARDED_ID
+const PROD_BANNER_ID = ENV.VITE_ADMOB_BANNER_ID || ENV.REACT_APP_ADMOB_BANNER_ID
 
 const isTest = !ENV.PROD
 
@@ -185,7 +186,7 @@ class AdManagerService {
         if (useGameStore.getState().adsDisabled || Capacitor.getPlatform() === 'web') return
         try {
             await AdMob.showBanner({
-                adId: isTest ? 'ca-app-pub-3940256099942544/6300978111' : '...', // Test Banner
+                adId: isTest ? 'ca-app-pub-3940256099942544/6300978111' : PROD_BANNER_ID,
                 adSize: BannerAdSize.ADAPTIVE_BANNER,
                 position: BannerAdPosition.BOTTOM_CENTER,
                 isTesting: isTest,
