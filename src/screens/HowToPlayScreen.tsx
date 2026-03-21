@@ -38,7 +38,7 @@ export default function HowToPlayScreen() {
                             id={`howto-step-${i + 1}`}
                             className="glass-strong p-5 rounded-[1.5rem] flex gap-5 items-center border border-emerald-500/10"
                         >
-                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0" style={{ marginLeft: '0.5rem' }}>
                                 <span className="text-3xl drop-shadow-lg">{step.emoji}</span>
                             </div>
                             <div>
