@@ -194,20 +194,29 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 5 – Bulmaca Validator ve Veri Seti Üretimi
+## ✅ PROMPT 5 – Bulmaca Validator ve Veri Seti Üretimi
+
+**Durum: TAMAMLANDI**
+
+- [x] Validator Script (`scripts/generateAndValidatePuzzles.js`):
+    - Seçili zorluğa göre (Easy: 45-50, Medium: 31-35, Hard: 24-28 ipucu) tam 90 adet bölüm rastgele kazıyarak üretildi.
+    - Satır/Sütun/Blok OCP ve kural testlerinden geçti.
+    - initialBoard / solutionBoard tutarlılığı test edildi.
+    - Tek ve benzersiz çözüm (Backtracking Solver kullanılarak tam 1 tane çözüm olduğu garanti edildi).
+- [x] Mükemmel bir JSON dosyası `src/constants/puzzles.json` konumuna başarıyla oluşturuldu.
+- [x] `GameScreen` MOCK veriyi kaldırıp gerçek JSON'dan (`puzzles.json`) bölüm verisi okuyacak şekilde güncellendi.
+
+---
+
+## ⏳ PROMPT 6 – Akıllı Kayıt ve Kurtarma (Persistence)
 
 **Durum: BEKLIYOR**
 
-- [ ] Validator Script (`scripts/validatePuzzles.js`):
-    - Satır/Sütun/Blok kuralları
-    - initialBoard / solutionBoard tutarlılığı
-    - Tek ve benzersiz çözüm (Backtracking Solver)
-- [ ] 90 Bulmaca Üretimi:
-    - 30 Kolay (Naked/Hidden Single, 45-50 açık hücre)
-    - 30 Orta (Pair/Triple, 30-35 açık hücre)
-    - 30 Zor (X-wing/Swordfish, 22-27 açık hücre)
-- [ ] Mükemmel bir JSON dosyası `src/constants/puzzles.json`
-- [ ] `GameScreen` MOCK veriyi kaldırıp gerçek JSON'dan okuyacak şekilde güncellenecek.
+- [ ] `useAppLifecycle` Hook (Zaten yazılmıştı ancak game loop testleri/refine yapılması lazım)
+- [ ] Zustand Persist Middleware refinement (`savedState` yönetimi)
+- [ ] Oyun yükleme (Resume) mantığı:
+    - `/game` ekranına girildiğinde `savedState` varsa (aynı chapter), oradan yüklenmeli.
+- [ ] Crash Recovery Testing (Testler)
 
 
 

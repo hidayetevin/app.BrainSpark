@@ -9,38 +9,12 @@ import { TopBar } from '@/components/game/TopBar'
 import { SudokuGrid } from '@/components/game/SudokuGrid'
 import { Keyboard } from '@/components/game/Keyboard'
 
-// Gecici Mock Puzzle (PROMPT 5'te JSON üzerinden yüklenecek)
+// Gerçek Veri Seti (PROMPT 5 Entegrasyonu)
 import type { PuzzleData } from '@/types/game'
-
-const MOCK_PUZZLE: PuzzleData = {
-    id: 'easy_001',
-    difficulty: 'easy',
-    initialBoard: [
-        5, 3, 0, 0, 7, 0, 0, 0, 0,
-        6, 0, 0, 1, 9, 5, 0, 0, 0,
-        0, 9, 8, 0, 0, 0, 0, 6, 0,
-        8, 0, 0, 0, 6, 0, 0, 0, 3,
-        4, 0, 0, 8, 0, 3, 0, 0, 1,
-        7, 0, 0, 0, 2, 0, 0, 0, 6,
-        0, 6, 0, 0, 0, 0, 2, 8, 0,
-        0, 0, 0, 4, 1, 9, 0, 0, 5,
-        0, 0, 0, 0, 8, 0, 0, 7, 9,
-    ],
-    solutionBoard: [
-        5, 3, 4, 6, 7, 8, 9, 1, 2,
-        6, 7, 2, 1, 9, 5, 3, 4, 8,
-        1, 9, 8, 3, 4, 2, 5, 6, 7,
-        8, 5, 9, 7, 6, 1, 4, 2, 3,
-        4, 2, 6, 8, 5, 3, 7, 9, 1,
-        7, 1, 3, 9, 2, 4, 8, 5, 6,
-        9, 6, 1, 5, 3, 7, 2, 8, 4,
-        2, 8, 7, 4, 1, 9, 6, 3, 5,
-        3, 4, 5, 2, 8, 6, 1, 7, 9,
-    ]
-}
+import puzzlesData from '@/constants/puzzles.json'
 
 /**
- * GameScreen – Oyun Ekranı (PROMPT 4 Entegrasyonu)
+ * GameScreen – Oyun Ekranı (PROMPT 4 & 5 Entegrasyonu)
  * Grid, Keyboard ve Engine hook birleşimi.
  */
 export default function GameScreen() {
@@ -69,20 +43,27 @@ export default function GameScreen() {
     // Sudoku Engine
     const { placeNumber, useHint } = useSudokuEngine(puzzleData)
 
-    // 1. Oyunun Yüklenmesi (Mock)
+    // 1. Oyunun Yüklenmesi (PROMPT 5)
     useEffect(() => {
-        // Gerçekte: id = `${difficulty}_${chapter.padStart(3,'0')}` formatında JSON'dan çekilir
-        // Şimdilik mock veriyi kullanıp store reset diyoruz
         setTimeout(() => {
-            // difficulty veya chapter değişmişse MOCK'un id'sini uydur (test için)
-            const data = { ...MOCK_PUZZLE, difficulty: (difficulty as any) || 'easy', id: `${difficulty}_${chapter}` }
-            setPuzzleData(data)
-            // resetGame içindeki Zustand action sadece game ilk açıldığında veya continue olmadığında çağırılmalı 
-            // (PROMPT 6 Kayıt sisteminde refine edilecek. Şimdilik hep reset çekiyoruz ancak store'da savedState varsa GameScreen açılmazdı vs)
-            const state = useGameStore.getState()
+            // JSON'daki id formatı: 'easy_001'
+            const puzzleId = `${difficulty}_${(chapter || '1').padStart(3, '0')}`
+
+            const foundPuzzle = puzzlesData.puzzles.find(p => p.id === puzzleId)
+
+            if (!foundPuzzle) {
+                console.error(`Bulmaca verisi bulunamadı: ${puzzleId}`)
+                navigate('/')
+                return
+            }
+
+            setPuzzleData(foundPuzzle as PuzzleData)
+
             // Sadece 0 timer ise veya chapter farklı ise resetle (Resume oyunları bozmamak için)
+            // (PROMPT 6 Kayıt sisteminde refine edilecek)
+            const state = useGameStore.getState()
             if (state.chapter !== parseInt(chapter || '1')) {
-                resetGame(data)
+                resetGame(foundPuzzle as PuzzleData)
             }
         }, 100)
         // Sadece component mount edildiğinde
