@@ -72,14 +72,14 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
         engineRef.current.syncGrid(grid)
     }, [grid])
 
-    const handleWin = () => {
+    const handleWin = async () => {
         const store = useGameStore.getState()
         const stars = calculateStars(store.difficulty, store.elapsedTime, store.mistakes)
         store.setStars(stars)
         store.setCompleted(true)
         AudioService.playSuccess()
         if (store.settings.vibrationEnabled) {
-            Haptics.vibrate()
+            await Haptics.vibrate({ duration: 200 })
         }
     }
 
@@ -93,14 +93,14 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
         getCellsWithSameValue: (value) =>
             engineRef.current.getCellsWithSameValue(value),
 
-        placeNumber: (cellIndex, value) => {
+        placeNumber: async (cellIndex, value) => {
             const store = useGameStore.getState()
             AudioService.playClick()
 
             if (value === 0) {
                 store.removeNumber(cellIndex)
                 if (store.settings.vibrationEnabled) {
-                    Haptics.impact({ style: ImpactStyle.Light })
+                    await Haptics.impact({ style: ImpactStyle.Light })
                 }
                 return
             }
@@ -108,7 +108,7 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             if (!engineRef.current.validateMove(cellIndex, value)) {
                 AudioService.playError()
                 if (store.settings.vibrationEnabled) {
-                    Haptics.impact({ style: ImpactStyle.Heavy })
+                    await Haptics.vibrate({ duration: 100 })
                 }
                 const conflicts = engineRef.current.getConflictingCells(cellIndex, value)
                 store.setErrorCells(conflicts)
@@ -118,7 +118,7 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             }
 
             if (store.settings.vibrationEnabled) {
-                Haptics.impact({ style: ImpactStyle.Light }) // Doğru yerleştirme
+                await Haptics.impact({ style: ImpactStyle.Light }) // Doğru yerleştirme
             }
 
             store.placeNumber(cellIndex, value)
@@ -135,7 +135,7 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             }
         },
 
-        useHint: (cellIndex) => {
+        useHint: async (cellIndex) => {
             const engine = engineRef.current
             const store = useGameStore.getState()
 
@@ -148,7 +148,7 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
 
             AudioService.playClick()
             if (store.settings.vibrationEnabled) {
-                Haptics.impact({ style: ImpactStyle.Medium })
+                await Haptics.impact({ style: ImpactStyle.Medium })
             }
 
             store.increaseHintsUsed()
@@ -166,11 +166,11 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             }
         },
 
-        toggleNote: (cellIndex, value) => {
+        toggleNote: async (cellIndex, value) => {
             const store = useGameStore.getState()
             AudioService.playClick()
             if (store.settings.vibrationEnabled) {
-                Haptics.impact({ style: ImpactStyle.Light })
+                await Haptics.impact({ style: ImpactStyle.Light })
             }
             store.toggleNote(cellIndex, value)
         },
