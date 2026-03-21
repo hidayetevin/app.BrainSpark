@@ -70,7 +70,8 @@ const defaultPersistedSlice: PersistedSlice = {
     },
     puzzleStats: {},
     streak: 0,
-    lastChallengeDate: '',
+    lastChallengeClaimDate: '',
+    lastTrustedTime: 0,
     adsDisabled: false,
     savedState: null,
 }
@@ -184,6 +185,42 @@ export const useGameStore = create<GameState>()(
                 }))
             },
 
+            claimDailyReward: (trustedTimeMs: number) => {
+                const state = get()
+                const dateObj = new Date(trustedTimeMs)
+                const today = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getDate().toString().padStart(2, '0')}`
+
+                if (state.lastChallengeClaimDate === today) {
+                    return { success: false, newStreak: state.streak }
+                }
+
+                let newStreak = 1
+                if (state.lastChallengeClaimDate) {
+                    // Sadece tarihleri karşılaştırarak saat farkının ceil yüzünden artmasını önle
+                    const lastDateMidnight = new Date(state.lastChallengeClaimDate + 'T00:00:00')
+                    const todayMidnight = new Date(today + 'T00:00:00')
+
+                    const diffTime = todayMidnight.getTime() - lastDateMidnight.getTime()
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
+
+                    if (diffDays === 1) {
+                        newStreak = state.streak + 1
+                    } else if (diffDays > 1) {
+                        newStreak = 1 // Streak koptu
+                    } else if (diffDays === 0) {
+                        newStreak = state.streak
+                    }
+                }
+
+                set({
+                    streak: newStreak,
+                    lastChallengeClaimDate: today,
+                    lastTrustedTime: trustedTimeMs
+                })
+
+                return { success: true, newStreak }
+            },
+
             selectCell: (cellIndex: number | null) => {
                 set({ selectedCell: cellIndex })
             },
@@ -270,6 +307,31 @@ export const useGameStore = create<GameState>()(
                     isCompleted: false,
                     selectedCell: null,
                     errorCells: [],
+                    savedState: null // Yeni oyun başlayınca öncekini sil
+                })
+            },
+
+            resumeSavedGame: (puzzleData: PuzzleData) => {
+                const state = get()
+                if (!state.savedState) {
+                    state.resetGame(puzzleData) // Saved state yoksa reset at
+                    return
+                }
+
+                set({
+                    initialGrid: puzzleData.initialBoard.slice(),
+                    solutionGrid: puzzleData.solutionBoard.slice(),
+                    grid: state.savedState.grid,
+                    notes: deserializeNotes(state.savedState.notes),
+                    difficulty: state.savedState.difficulty,
+                    chapter: state.savedState.chapter,
+                    lives: state.savedState.lives,
+                    elapsedTime: state.savedState.elapsedTime,
+                    // Diğer istatistikleri koru
+                    isPaused: false,
+                    isCompleted: false,
+                    selectedCell: null,
+                    errorCells: []
                 })
             },
 
@@ -334,7 +396,8 @@ export const useGameStore = create<GameState>()(
                 settings: state.settings,
                 puzzleStats: state.puzzleStats,
                 streak: state.streak,
-                lastChallengeDate: state.lastChallengeDate,
+                lastChallengeClaimDate: state.lastChallengeClaimDate,
+                lastTrustedTime: state.lastTrustedTime,
                 adsDisabled: state.adsDisabled,
                 savedState: state.grid.some(v => v !== 0)
                     ? {
@@ -359,7 +422,8 @@ export const useGameStore = create<GameState>()(
                     settings: ps.settings ?? currentState.settings,
                     puzzleStats: ps.puzzleStats ?? currentState.puzzleStats,
                     streak: ps.streak ?? currentState.streak,
-                    lastChallengeDate: ps.lastChallengeDate ?? currentState.lastChallengeDate,
+                    lastChallengeClaimDate: ps.lastChallengeClaimDate ?? currentState.lastChallengeClaimDate,
+                    lastTrustedTime: ps.lastTrustedTime ?? currentState.lastTrustedTime,
                     adsDisabled: ps.adsDisabled ?? currentState.adsDisabled,
                     savedState: ps.savedState ?? null,
                 }

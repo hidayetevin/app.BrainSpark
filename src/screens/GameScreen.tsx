@@ -36,7 +36,6 @@ export default function GameScreen() {
         setPaused,
         isCompleted,
         selectedCell,
-        resetGame,
         toggleNote, // Kalem modu
         removeNumber // Silme tuşu için
     } = useGameStore()
@@ -60,11 +59,13 @@ export default function GameScreen() {
 
             setPuzzleData(foundPuzzle as PuzzleData)
 
-            // Sadece 0 timer ise veya chapter farklı ise resetle (Resume oyunları bozmamak için)
-            // (PROMPT 6 Kayıt sisteminde refine edilecek)
             const state = useGameStore.getState()
-            if (state.chapter !== parseInt(chapter || '1')) {
-                resetGame(foundPuzzle as PuzzleData)
+
+            // Eğer kaydedilmiş oyun bu aynı chapter/difficulty ise devam et, yoksa reset at
+            if (state.savedState && state.savedState.chapter === parseInt(chapter || '1') && state.savedState.difficulty === difficulty) {
+                state.resumeSavedGame(foundPuzzle as PuzzleData)
+            } else {
+                state.resetGame(foundPuzzle as PuzzleData)
             }
         }, 100)
         // Sadece component mount edildiğinde

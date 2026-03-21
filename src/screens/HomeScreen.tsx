@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
+import { useGameStore } from '@/stores/gameStore'
 
 /**
  * HomeScreen – Ana Ekran
@@ -8,6 +9,7 @@ import ScreenTransition from '@/components/ScreenTransition'
  */
 export default function HomeScreen() {
     const navigate = useNavigate()
+    const { savedState } = useGameStore()
 
     return (
         <ScreenTransition>
@@ -39,9 +41,16 @@ export default function HomeScreen() {
                     transition={{ delay: 0.25, duration: 0.4, ease: 'easeOut' }}
                     className="flex flex-col w-full max-w-xs gap-3"
                 >
+                    {savedState && (
+                        <button id="btn-resume" className="btn btn-secondary w-full py-4 text-lg bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl"
+                            onClick={() => navigate(`/game/${savedState.difficulty}/${savedState.chapter}`)}>
+                            ▶ Kaldığın Yerden Devam Et
+                        </button>
+                    )}
+
                     <button id="btn-play" className="btn btn-primary w-full py-4 text-lg"
                         onClick={() => navigate('/levels')}>
-                        🎮 Oyna
+                        🎮 Yeni Oyun
                     </button>
                     <button id="btn-daily" className="btn btn-ghost w-full"
                         onClick={() => navigate('/daily')}>

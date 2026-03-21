@@ -225,46 +225,29 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 7 – Akıllı Kayıt ve Kurtarma (Persistence Refinement)
+## ✅ PROMPT 7 – Retention Sistemleri & Akıllı Kayıt ve Kurtarma
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] Zustand Persist Middleware refinement (`savedState` tam yönetimi)
-- [ ] Oyun yükleme (Resume) mantığı:
-    - `/game` ekranına girildiğinde `savedState` varsa (aynı chapter), oradan yüklenmeli.
-- [ ] Ana menüde "Kaydedilmiş oyuna devam et" butonu.
-
-
-
----
-
-## ⏳ PROMPT 4 – Advanced Sudoku UX
-
-**Durum: BEKLIYOR**
-
----
-
-## ⏳ PROMPT 5 – Bulmaca Validator ve 90 Bulmaca
-
-**Durum: BEKLIYOR**
-
----
-
-## ⏳ PROMPT 6 – AdManager Sistemi
-
-**Durum: BEKLIYOR**
-
----
-
-## ⏳ PROMPT 7 – Retention Sistemleri
-
-**Durum: BEKLIYOR**
+- [x] **Zustand Persist Refinement**: `resumeSavedGame` action'ı yazıldı. `grid`, `notes`, `lives`, `elapsedTime` güvenle yüklenebiliyor.
+- [x] **GameScreen Resume Mantığı**: Girilen bölüm ve zorluk, `savedState` içindekiyle aynıysa sıfırdan oluşturmak yerine kalındığı yerden devam ediyor.
+- [x] **HomeScreen "Devam Et" Butonu**: Eğer `savedState` varsa ana ekranda beliriyor.
+- [x] **Hybrid Time Verification**: `TimeService.ts` yazıldı. `worldtimeapi.org`'den zaman çekiyor. Yoksa `lastTrustedTime` kullanıyor.
+- [x] **Anti-Cheat Sistemi**: `deviceTime < lastTrustedTime` durumunda `isCheatDetected: true` dönüyor.
+- [x] **Streak Claim Algoritması**: Kesin tarih checkleri ile `claimDailyReward` state'i eklenerek Streak döngüleri korundu.
+- [x] **Achievement Modal**: Streak milestone'ları (3, 7, 30 gün) için `lottie-react` ile çalışan `AchievementModal.tsx` yapıldı.
+- [x] **Testler**: Anti-cheat (`TimeService`) ve `Streak` state machine'i Vitest ile simüle edildi (`retention.test.ts`). Toplam test sayısı: 66.
 
 ---
 
 ## ⏳ PROMPT 8 – UI/UX Ekran Tasarımları
 
 **Durum: BEKLIYOR**
+
+- [ ] Tailwind / Framer Motion gerçek tasarımlar.
+- [ ] Renk paletleri ve modern cam tasarımı (Level selection vb.)
+- [ ] Ana Menü ve Alt bileşen tasarımlarının giydirilmesi.
+
 
 ---
 
