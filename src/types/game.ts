@@ -55,6 +55,8 @@ export interface GameSettings {
     errorHighlight: boolean
     soundEnabled: boolean
     vibrationEnabled: boolean
+    language: 'tr' | 'en'
+    darkMode: boolean
 }
 
 /**

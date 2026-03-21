@@ -1,39 +1,101 @@
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
+import { AdManager } from '@/services/AdManager'
+import { useGameStore } from '@/stores/gameStore'
 
-/**
- * ChaptersScreen – Bölüm Seçim Ekranı
- * PROMPT 8'de tam tasarım (4'lü grid, kilitleme mantığı) gelecek.
- */
 export default function ChaptersScreen() {
     const navigate = useNavigate()
     const { difficulty } = useParams<{ difficulty: string }>()
+    const { puzzleStats } = useGameStore()
 
+    const diffMode = difficulty || 'easy'
     const label = difficulty === 'easy' ? 'Kolay' : difficulty === 'medium' ? 'Orta' : 'Zor'
 
+    useEffect(() => {
+        AdManager.showBanner()
+        return () => {
+            void AdManager.hideBanner()
+        }
+    }, [])
+
+    // İlerleme mantığı hesaplanıyor
+    const { maxCompletedIndex, statsMap } = useMemo(() => {
+        let maxIdx = -1
+        const map: boolean[] = Array(30).fill(false)
+        for (let i = 0; i < 30; i++) {
+            const puzzleId = `${diffMode}_${(i + 1).toString().padStart(3, '0')}`
+            const stat = puzzleStats[puzzleId]
+            if (stat && stat.stars > 0) {
+                map[i] = true
+                maxIdx = Math.max(maxIdx, i)
+            }
+        }
+        return { maxCompletedIndex: maxIdx, statsMap: map }
+    }, [puzzleStats, diffMode])
+
+    // "Mevcut + sonraki 2: aktif" -> maxCompletedIndex + 3'e kadar açık
+    const getLevelStatus = (i: number) => {
+        const isCompleted = statsMap[i]
+        const isUnlocked = i <= maxCompletedIndex + 3
+        return { isCompleted, isUnlocked }
+    }
+
     return (
-        <ScreenTransition>
-            <div className="flex flex-col h-full p-6 gap-6">
-                <header className="flex items-center gap-3 pt-2">
-                    <button id="btn-back-chapters" className="btn btn-ghost px-3 py-2"
+        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)]">
+            <div className="flex flex-col h-full p-6 pb-24 gap-6">
+                <header className="flex items-center gap-4 pt-2">
+                    <button className="btn btn-ghost px-3 py-2 rounded-full backdrop-blur-md"
                         onClick={() => navigate(-1)}>
-                        ← Geri
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <h1 className="text-2xl font-bold">{label} – Bölümler</h1>
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl font-black bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
+                            {label}
+                        </h1>
+                        <p className="text-xs text-indigo-300 font-medium tracking-wider uppercase">Bölümler</p>
+                    </div>
                 </header>
 
-                {/* 4x grid of chapters — full logic in PROMPT 8 */}
-                <div className="grid grid-cols-4 gap-3">
-                    {Array.from({ length: 30 }, (_, i) => (
-                        <button
-                            key={i}
-                            id={`btn-chapter-${i + 1}`}
-                            className="glass aspect-square rounded-xl flex items-center justify-center font-bold text-lg"
-                            onClick={() => navigate(`/game/${difficulty}/${i + 1}`)}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
+                <div className="grid grid-cols-4 gap-4">
+                    {Array.from({ length: 30 }, (_, i) => {
+                        const { isCompleted, isUnlocked } = getLevelStatus(i)
+
+                        return (
+                            <motion.button
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.02, duration: 0.3 }}
+                                key={i}
+                                disabled={!isUnlocked}
+                                id={`btn-chapter-${i + 1}`}
+                                onClick={() => navigate(`/game/${diffMode}/${i + 1}`)}
+                                className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center font-bold text-xl transition-all ${isCompleted
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 active:scale-95'
+                                    : isUnlocked
+                                        ? 'bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-lg active:scale-90 hover:scale-[1.03] border border-white/20'
+                                        : 'bg-slate-800/50 text-slate-600 border border-slate-700/50 cursor-not-allowed'
+                                    }`}
+                            >
+                                {isCompleted && (
+                                    <div className="absolute top-1 right-1">
+                                        <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                )}
+
+                                {isUnlocked ? (
+                                    <span>{i + 1}</span>
+                                ) : (
+                                    <svg className="w-6 h-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                )}
+                            </motion.button>
+                        )
+                    })}
                 </div>
             </div>
         </ScreenTransition>

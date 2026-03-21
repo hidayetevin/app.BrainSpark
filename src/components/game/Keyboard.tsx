@@ -12,11 +12,6 @@ interface KeyboardProps {
     onTogglePencil: () => void
 }
 
-/**
- * Keyboard: Virtual Numpad & Tools Panel
- * 1'den 9'a kadar sayılar, Silme, İpucu, Kalem Modu.
- * Board üzerindeki kullanımları sayar ve limiti dolanları soluklaştırır.
- */
 export function Keyboard({
     onNumberPress,
     onErase,
@@ -24,7 +19,6 @@ export function Keyboard({
     pencilMode,
     onTogglePencil,
 }: KeyboardProps) {
-    // Grid'e abone ol (sayı sayaçlarını güncel tutmak için)
     const grid = useGameStore(state => state.grid)
 
     // 1-9 sayılarının kullanım miktarlarını hesapla
@@ -35,69 +29,103 @@ export function Keyboard({
     })
 
     return (
-        <div className="flex flex-col gap-2 p-2 sm:p-4 w-full max-w-md mx-auto">
-
-            {/* Numpad (1-9) */}
-            <div className="grid grid-cols-5 gap-2 px-2">
-                {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => {
-                    const count = counts[num]
-                    const isDone = count >= 9
-
-                    return (
-                        <motion.button
-                            key={num}
-                            whileTap={!isDone ? { scale: 0.9 } : undefined}
-                            onClick={() => {
-                                // Eğer kalem modundaysan veya sayı bitmemişse izin ver
-                                if (pencilMode || !isDone) onNumberPress(num)
-                            }}
-                            disabled={isDone && !pencilMode}
-                            className={clsx(
-                                "glass btn flex flex-col items-center justify-center p-0 h-14 sm:h-16 rounded-xl",
-                                "text-2xl font-bold transition-opacity",
-                                isDone && !pencilMode ? "opacity-30 cursor-not-allowed" : "text-[var(--color-primary)] shadow-sm hover:brightness-110 active:scale-95"
-                            )}
-                        >
-                            <span>{num}</span>
-                            {/* Kalan sayıyı minik bir dot/counter olarak gösterebiliriz */}
-                        </motion.button>
-                    )
-                })}
-
-                {/* Araç Kutusu (3 Buton) - Son kolonda/alt satırda yerleştirmek için */}
-                {/* Klavye Grid'ini 5 kolon yaptık, 9 numara + 3 araç = 12 buton. Grid yapısı otomatik diler */}
-
+        <div className="flex flex-col gap-3 p-2 sm:p-4 w-full max-w-md mx-auto z-10">
+            {/* Tools Row (Sil, Not, İpucu) */}
+            <div className="grid grid-cols-3 gap-3 px-2 mb-1">
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.92 }}
                     onClick={onErase}
-                    className="glass btn flex flex-col items-center justify-center p-0 h-14 sm:h-16 rounded-xl text-[var(--text-secondary)] hover:brightness-110 active:scale-95"
+                    className="glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 text-indigo-200 hover:text-white transition-colors border border-white/10"
                 >
-                    <BackspaceIcon className="w-6 h-6 mb-1" />
-                    <span className="text-[10px] font-medium leading-none">Sil</span>
+                    <BackspaceIcon className="w-6 h-6" />
+                    <span className="text-sm font-semibold">Sil</span>
                 </motion.button>
 
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.92 }}
                     onClick={onTogglePencil}
                     className={clsx(
-                        "glass btn flex flex-col items-center justify-center p-0 h-14 sm:h-16 rounded-xl hover:brightness-110 active:scale-95",
-                        pencilMode ? "text-[var(--color-primary)] bg-[rgba(99,102,241,0.1)] border-[var(--color-primary)]" : "text-[var(--text-secondary)]"
+                        "glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 transition-all border border-white/10 relative overflow-hidden",
+                        pencilMode ? "bg-indigo-500/30 text-indigo-300 border-indigo-500/50" : "text-indigo-200 hover:text-white"
                     )}
                 >
-                    {pencilMode ? <PencilSolidIcon className="w-6 h-6 mb-1" /> : <PencilIcon className="w-6 h-6 mb-1" />}
-                    <span className="text-[10px] font-medium leading-none">Not</span>
+                    {pencilMode && <div className="absolute inset-0 bg-indigo-500/10 animate-pulse" />}
+                    {pencilMode ? <PencilSolidIcon className="w-6 h-6" /> : <PencilIcon className="w-6 h-6" />}
+                    <span className="text-sm font-semibold">Not</span>
                 </motion.button>
 
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.92 }}
                     onClick={onHint}
-                    className="glass btn flex flex-col items-center justify-center p-0 h-14 sm:h-16 rounded-xl text-yellow-500 hover:brightness-110 active:scale-95"
+                    className="glass-strong h-14 rounded-[1.25rem] flex items-center justify-center gap-2 text-amber-300 hover:text-amber-200 transition-colors border border-amber-500/20"
                 >
-                    <LightBulbIcon className="w-6 h-6 mb-1" />
-                    <span className="text-[10px] font-medium leading-none">İpucu</span>
+                    <LightBulbIcon className="w-6 h-6" />
+                    <span className="text-sm font-semibold">İpucu</span>
                 </motion.button>
             </div>
 
+            {/* Numpad Row 1-5 */}
+            <div className="grid grid-cols-5 gap-2 px-2">
+                {[1, 2, 3, 4, 5].map((num) => {
+                    const count = counts[num]
+                    const remaining = 9 - count
+                    const isDone = remaining <= 0
+
+                    return (
+                        <NumberButton
+                            key={num}
+                            num={num}
+                            remaining={remaining}
+                            isDone={isDone}
+                            pencilMode={pencilMode}
+                            onPress={() => (pencilMode || !isDone) && onNumberPress(num)}
+                        />
+                    )
+                })}
+            </div>
+
+            {/* Numpad Row 6-9 */}
+            <div className="grid grid-cols-4 gap-2 px-2">
+                {[6, 7, 8, 9].map((num) => {
+                    const count = counts[num]
+                    const remaining = 9 - count
+                    const isDone = remaining <= 0
+
+                    return (
+                        <NumberButton
+                            key={num}
+                            num={num}
+                            remaining={remaining}
+                            isDone={isDone}
+                            pencilMode={pencilMode}
+                            onPress={() => (pencilMode || !isDone) && onNumberPress(num)}
+                        />
+                    )
+                })}
+            </div>
         </div>
+    )
+}
+
+function NumberButton({ num, remaining, isDone, pencilMode, onPress }: any) {
+    return (
+        <motion.button
+            whileTap={!isDone || pencilMode ? { scale: 0.9 } : undefined}
+            onClick={onPress}
+            disabled={isDone && !pencilMode}
+            className={clsx(
+                "relative flex flex-col items-center justify-center h-16 sm:h-20 rounded-[1.25rem] transition-all border border-white/5",
+                isDone && !pencilMode
+                    ? "bg-slate-800/40 text-slate-600 cursor-not-allowed"
+                    : "bg-slate-800/80 text-white shadow-xl hover:bg-slate-700 active:scale-95"
+            )}
+        >
+            <span className="text-3xl font-black">{num}</span>
+            {(!isDone || pencilMode) && (
+                <span className="absolute bottom-1.5 text-[10px] sm:text-xs font-bold text-slate-400">
+                    {Math.max(0, remaining)}
+                </span>
+            )}
+        </motion.button>
     )
 }

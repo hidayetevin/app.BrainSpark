@@ -67,6 +67,8 @@ const defaultPersistedSlice: PersistedSlice = {
         errorHighlight: true,
         soundEnabled: true,
         vibrationEnabled: true,
+        language: 'tr',
+        darkMode: true,
     },
     puzzleStats: {},
     streak: 0,

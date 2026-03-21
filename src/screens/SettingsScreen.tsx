@@ -1,46 +1,121 @@
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
+import { useGameStore } from '@/stores/gameStore'
+import { AdManager } from '@/services/AdManager'
 
-/**
- * SettingsScreen – Ayarlar Ekranı
- * TR/EN dil, Ses/Titreşim, Font boyutu, Dark Mode, Error Highlight
- * PROMPT 8'de tam implementasyon gelecek.
- */
 export default function SettingsScreen() {
     const navigate = useNavigate()
+    const { settings, updateSettings } = useGameStore()
+
+    const toggleSetting = (key: keyof typeof settings) => {
+        if (typeof settings[key] === 'boolean') {
+            updateSettings({ [key]: !settings[key] })
+        }
+    }
+
+    const toggleLanguage = () => {
+        updateSettings({ language: settings.language === 'tr' ? 'en' : 'tr' })
+    }
 
     return (
-        <ScreenTransition>
-            <div className="flex flex-col h-full p-6 gap-6">
-                <header className="flex items-center gap-3 pt-2">
-                    <button id="btn-back-settings" className="btn btn-ghost px-3 py-2"
+        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)]">
+            <div className="flex flex-col h-full p-6 pb-12 gap-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-[100px] opacity-10" />
+
+                <header className="flex items-center gap-4 pt-2 z-10">
+                    <button className="btn btn-ghost px-3 py-2 rounded-full backdrop-blur-md"
                         onClick={() => navigate(-1)}>
-                        ← Geri
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <h1 className="text-2xl font-bold">⚙️ Ayarlar</h1>
+                    <h1 className="text-3xl font-black tracking-tight text-white">Ayarlar</h1>
                 </header>
 
-                <div className="flex flex-col gap-3">
-                    {[
-                        { label: 'Dil', value: 'Türkçe', id: 'setting-language' },
-                        { label: 'Ses', value: '🔊 Açık', id: 'setting-sound' },
-                        { label: 'Titreşim', value: '📳 Açık', id: 'setting-vibration' },
-                        { label: 'Yazı Boyutu', value: 'Orta', id: 'setting-font-size' },
-                        { label: 'Karanlık Mod', value: '🌙 Açık', id: 'setting-dark-mode' },
-                        { label: 'Hata Vurgusu', value: '✅ Açık', id: 'setting-error-highlight' },
-                    ].map(item => (
-                        <div key={item.id} id={item.id}
-                            className="glass flex justify-between items-center p-4 rounded-xl">
-                            <span className="font-medium">{item.label}</span>
-                            <span style={{ color: 'var(--text-secondary)' }}>{item.value}</span>
-                        </div>
-                    ))}
+                <div className="flex flex-col gap-4 z-10">
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2">Genel Ayarlar</div>
+
+                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                        <SettingItem
+                            label="Dil"
+                            value={settings.language === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'}
+                            onClick={toggleLanguage}
+                        />
+                        <SettingToggle
+                            label="Ses Efektleri"
+                            checked={settings.soundEnabled}
+                            onChange={() => toggleSetting('soundEnabled')}
+                        />
+                        <SettingToggle
+                            label="Titreşim (Haptics)"
+                            checked={settings.vibrationEnabled}
+                            onChange={() => toggleSetting('vibrationEnabled')}
+                        />
+                    </div>
+
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">Oyun İçi Ayarlar</div>
+
+                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                        <SettingToggle
+                            label="Hata Vurgulama"
+                            checked={settings.errorHighlight}
+                            onChange={() => toggleSetting('errorHighlight')}
+                        />
+                        <SettingToggle
+                            label="Karanlık Mod (Dark)"
+                            checked={settings.darkMode}
+                            onChange={() => toggleSetting('darkMode')}
+                        />
+                    </div>
+
+                    <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider ml-2 mt-4">Diğer</div>
+
+                    <div className="glass-strong rounded-[2rem] p-2 flex flex-col gap-2 shadow-xl border border-white/5">
+                        <SettingItem
+                            label="Satın Alımları Geri Yükle"
+                            value="Geri Yükle"
+                            onClick={() => {
+                                AdManager.restorePurchases()
+                                alert('Satın alım kontrol edildi.')
+                            }}
+                            highlight
+                        />
+                    </div>
                 </div>
 
-                <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
-                    Tam ayarlar PROMPT 8'de eklenecek
+                <p className="text-center text-xs text-slate-500 font-medium mt-auto px-4 z-10">
+                    Brain Spark v1.0.0
                 </p>
             </div>
         </ScreenTransition>
+    )
+}
+
+function SettingItem({ label, value, onClick, highlight = false }: any) {
+    return (
+        <button
+            onClick={onClick}
+            className="flex justify-between items-center px-4 py-4 rounded-2xl hover:bg-slate-800/50 active:scale-[0.98] transition-all text-left w-full"
+        >
+            <span className="font-semibold text-[1.05rem] text-slate-200">{label}</span>
+            <span className={`font-medium ${highlight ? 'text-indigo-400' : 'text-slate-400'}`}>{value}</span>
+        </button>
+    )
+}
+
+function SettingToggle({ label, checked, onChange }: any) {
+    return (
+        <button
+            onClick={onChange}
+            className="flex justify-between items-center px-4 py-4 rounded-2xl hover:bg-slate-800/50 active:scale-[0.98] transition-all text-left w-full"
+        >
+            <span className="font-semibold text-[1.05rem] text-slate-200">{label}</span>
+            <div className={`w-12 h-6 rounded-full p-1 transition-colors flex items-center ${checked ? 'bg-indigo-500' : 'bg-slate-700'}`}>
+                <motion.div
+                    initial={false}
+                    animate={{ x: checked ? 24 : 0 }}
+                    className="w-4 h-4 rounded-full bg-white shadow-sm"
+                />
+            </div>
+        </button>
     )
 }

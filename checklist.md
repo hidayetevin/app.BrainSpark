@@ -240,20 +240,30 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 8 – UI/UX Ekran Tasarımları
+## ✅ PROMPT 8 – UI/UX Ekran Tasarımları
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] Tailwind / Framer Motion gerçek tasarımlar.
-- [ ] Renk paletleri ve modern cam tasarımı (Level selection vb.)
-- [ ] Ana Menü ve Alt bileşen tasarımlarının giydirilmesi.
-
+- [x] **Safe Area Yönetimi**: `.screen` wrapper kullanılarak CSS `env(safe-area-inset)` değerleri uygulandı.
+- [x] **Ana Menü (HomeScreen)**: Premium 3D hisiyatlı logo, glassmorphism butonlar, "Kaldığın Yerden Devam Et" aksiyonu ve Framer Motion staggered grid animasyonları kondu.
+- [x] **Zorluk Seçimi (LevelsScreen)**: Her seviyenin (Kolay, Orta, Zor) kendine has animasyonlu yatay progress barları, Gradient Glow efektleri ve doluluk oranları (örn. %60 - 18/30) hesaplandı.
+- [x] **Bölümler (ChaptersScreen)**: `statsMap` ile O(30)'da kilit açma matematiği (Mevcut + sonraki 3'e kadar aktif). Tamamlananlar "Yeşil tikli" pasif, sıradakiler gradyanlı parlak buton yapıldı. AdMob Banner alanı ayrıldı (`pb-24`).
+- [x] **Günlük Bulmaca (DailyScreen)**: Dev boy neon emojiler, gece yarısına doğru akan live countdown, animasyonlu alev streaks ve glassmorphism arayüz hazırlandı.
+- [x] **Ayarlar (SettingsScreen)**: Ses, Titreşim, Dil, Karanlık Mod ve Hata Vurgulama toggle butonları `useGameStore`'a bağlı canlı switch'ler halinde tasarlandı. IAP Restore butonu eklendi.
+- [x] **Nasıl Oynanır (HowToPlayScreen)**: Framer Motion ile staggered timeline (timeline) efekti entegre edildi.
+- [x] **Oyun Klavyesi (Keyboard)**: Kalan sayı indikatörleri eklendi. Araç kutusu (Sil, Not, İpucu) premium buton stiline ve sayılar tükendiğinde opacity-30 solgun kilit hedefine büründürüldü.
 
 ---
 
 ## ⏳ PROMPT 9 – Game Over Modal, Tutorial, Polishing
 
 **Durum: BEKLIYOR**
+
+- [ ] Oyun Bitimi (Game Over / Level Complete) Lottie Modalı.
+- [ ] Yeni Başlayanlar İçin Oyun-İçi Etkileşimli Pointer (Tutorial Spotlight).
+- [ ] Haptic Feedback (Titreşim motoru `Capacitor/Haptics` plugin'i ile).
+- [ ] Confetti effect (`canvas-confetti`).
+
 
 ---
 
