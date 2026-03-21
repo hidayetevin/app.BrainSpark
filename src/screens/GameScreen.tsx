@@ -20,29 +20,27 @@ export default function GameScreen() {
     const puzzleId = `${difficulty}_${chapter?.padStart(3, '0')}`
 
     const {
-        grid,
         lives,
         isPaused,
         isCompleted,
         selectedCell,
         mistakes,
         elapsedTime,
-        hintsUsed,
         stars,
         resetGame,
         setPaused,
         saveGame,
         removeNumber,
-        toggleNote,
     } = useGameStore()
 
-    const { placeNumber, useHint } = useSudokuEngine()
-
     const [puzzleData, setPuzzleData] = useState<any>(null)
+
+    // ERROR FIX: puzzleData parametresini geçiyoruz.
+    const { placeNumber, useHint } = useSudokuEngine(puzzleData)
+
     const [showExitModal, setShowExitModal] = useState(false)
     const [exitModalAction, setExitModalAction] = useState<{ onConfirm: () => void; onCancel: () => void } | null>(null)
 
-    //useAppLifecycle event dinleyicisi
     useEffect(() => {
         const handleBack = (e: any) => {
             const { onConfirm, onCancel } = e.detail
@@ -57,16 +55,12 @@ export default function GameScreen() {
         const p = (puzzles as any[]).find(it => it.id === puzzleId)
         if (p) {
             setPuzzleData(p)
-            resetGame(p as any)
+            resetGame(p as Difficulty | any)
         }
     }, [puzzleId, resetGame])
 
     const handleNumberPress = (num: number) => {
         if (selectedCell === null || isPaused || isCompleted || lives === 0) return
-
-        // Pencil mode state'ini klavyeden veya store'dan alabiliriz. 
-        // Ancak şu an basitleştirilmiş bir yapı kullanıyoruz.
-        // SudokuEngine hook içindeki placeNumber logic'i otomatik pencil management yapıyor (auto-clean).
         placeNumber(selectedCell, num)
     }
 
@@ -95,13 +89,15 @@ export default function GameScreen() {
     }
 
     return (
-        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-4 bg-[var(--surface-bg)] overflow-hidden">
+        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-20 bg-[var(--surface-bg)] overflow-hidden">
             <TopBar />
 
-            <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[50%]">
-                <SudokuGrid />
+            <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[40%]">
+                <div className="w-full flex items-center justify-center">
+                    <SudokuGrid />
+                </div>
 
-                {/* PAUSE MODAL (PROMPT 9) */}
+                {/* PAUSE MODAL */}
                 <ActionModal
                     isOpen={isPaused && !isCompleted && lives > 0}
                     title="Oyun Duraklatıldı"
@@ -115,7 +111,7 @@ export default function GameScreen() {
                     }}
                 />
 
-                {/* EXIT CONFIRMATION MODAL (Back Button) */}
+                {/* EXIT CONFIRMATION MODAL */}
                 <ActionModal
                     isOpen={showExitModal}
                     title="Menüye Dönülsün mü?"
@@ -154,10 +150,9 @@ export default function GameScreen() {
                 stars={stars}
                 elapsedTime={elapsedTime}
                 mistakes={mistakes}
-                hintsUsed={hintsUsed}
-                onNext={() => {
-                    const nextChapter = (parseInt(chapter || '1') + 1)
-                    navigate(`/game/${difficulty}/${nextChapter}`)
+                onNextLevel={() => {
+                    const nextChapterInt = parseInt(chapter || '1') + 1
+                    navigate(`/game/${difficulty}/${nextChapterInt}`)
                 }}
                 onHome={() => navigate('/')}
             />

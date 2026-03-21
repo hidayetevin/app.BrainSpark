@@ -19,8 +19,8 @@ export default function SettingsScreen() {
     }
 
     return (
-        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)]">
-            <div className="flex flex-col h-full p-6 pb-12 gap-8 relative overflow-hidden">
+        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)] px-6 pb-20">
+            <div className="flex flex-col h-full gap-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-[100px] opacity-10" />
 
                 <header className="flex items-center gap-4 pt-2 z-10">

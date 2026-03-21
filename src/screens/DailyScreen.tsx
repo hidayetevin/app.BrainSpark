@@ -35,8 +35,8 @@ export default function DailyScreen() {
     const isCompletedToday = lastChallengeClaimDate === todayStr
 
     return (
-        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)]">
-            <div className="flex flex-col h-full p-6 pb-12 gap-6 relative overflow-hidden">
+        <ScreenTransition className="flex flex-col h-full bg-[var(--surface-bg)] px-6 pb-20">
+            <div className="flex flex-col h-full gap-6 relative overflow-hidden">
                 {/* Arka plan parlak efekti */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-fuchsia-600 rounded-full blur-[100px] opacity-20" />
 
