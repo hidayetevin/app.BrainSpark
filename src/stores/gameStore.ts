@@ -63,6 +63,11 @@ function deserializeNotes(raw: number[][]): Set<number>[] {
 // ─── Persisted Slice Defaults ────────────────────────────────────────────────
 
 const defaultPersistedSlice: PersistedSlice = {
+    settings: {
+        errorHighlight: true,
+        soundEnabled: true,
+        vibrationEnabled: true,
+    },
     puzzleStats: {},
     streak: 0,
     lastChallengeDate: '',
@@ -171,6 +176,12 @@ export const useGameStore = create<GameState>()(
 
             setAdsDisabled: (value: boolean) => {
                 set({ adsDisabled: value })
+            },
+
+            updateSettings: (newSettings) => {
+                set(state => ({
+                    settings: { ...state.settings, ...newSettings }
+                }))
             },
 
             selectCell: (cellIndex: number | null) => {
@@ -320,6 +331,7 @@ export const useGameStore = create<GameState>()(
              * Geçici state (isPaused, isCompleted, selectedCell, errorCells, vb) DIŞARDA bırakılır.
              */
             partialize: (state): PersistedSlice => ({
+                settings: state.settings,
                 puzzleStats: state.puzzleStats,
                 streak: state.streak,
                 lastChallengeDate: state.lastChallengeDate,
@@ -344,6 +356,7 @@ export const useGameStore = create<GameState>()(
                 const ps = persistedState as PersistedSlice
                 const merged: GameState = {
                     ...currentState,
+                    settings: ps.settings ?? currentState.settings,
                     puzzleStats: ps.puzzleStats ?? currentState.puzzleStats,
                     streak: ps.streak ?? currentState.streak,
                     lastChallengeDate: ps.lastChallengeDate ?? currentState.lastChallengeDate,

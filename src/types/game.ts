@@ -51,11 +51,19 @@ export interface SavedGameState {
 
 // ─── Store Slice (Persisted) ─────────────────────────────────────────────────
 
+export interface GameSettings {
+    errorHighlight: boolean
+    soundEnabled: boolean
+    vibrationEnabled: boolean
+}
+
 /**
  * Zustand persist middleware'inin diske yazacağı alan alt kümesi.
  * Geçici UI state'i (highlights, isPaused, vb.) BURAYA GİRMEZ.
  */
 export interface PersistedSlice {
+    /** Ayarlar */
+    settings: GameSettings
     /** Bulmaca istatistikleri (yıldız, süre, vb.) */
     puzzleStats: PuzzleStatsMap
     streak: number
@@ -113,6 +121,7 @@ export interface GameState extends PersistedSlice {
     increaseHintsUsed: () => void
     removeValueFromNotes: (cells: number[], value: number) => void
     savePuzzleStats: (puzzleId: string, stats: PuzzleStats) => void
+    updateSettings: (newSettings: Partial<GameSettings>) => void
     resetGame: (puzzleData: PuzzleData) => void
     /** Mevcut oyun state'ini arka planda Preferences'a yazar */
     saveGame: () => void

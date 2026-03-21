@@ -175,19 +175,39 @@ Son Güncelleme: 2026-03-21
 
 ---
 
-## ⏳ PROMPT 4 – Game Screen UI & Grid
+## ✅ PROMPT 4 – Game Screen UI & Grid
 
-**Durum: BEKLIYOR**
+**Durum: TAMAMLANDI**
 
-- [ ] Top Bar (Canlar, Hata Sayısı, Süre, Pause Butonu)
-- [ ] O(1) `memo` ile optimize edilmiş 9x9 CSS Grid (Hücre ve Notlar)
-- [ ] Alt Panel (Kalem toggle, İpucu butonu, Silme)
-- [ ] Virtual Numpad (seçili hücreye rakam basma)
-- [ ] Vurgulamalar:
+- [x] Top Bar: Canlar (kalpli), Süre (useTimer), Pause/Play Butonu, Zorluk ve Bölüm
+- [x] O(1) `memo` ile optimize edilmiş 9x9 CSS Grid (`SudokuGrid.tsx` ve `Cell.tsx`)
+- [x] Alt Panel (Kalem toggle, İpucu butonu, Silme)
+- [x] Virtual Numpad (seçili hücreye rakam basma `Keyboard.tsx`)
+- [x] Vurgulamalar:
+    - Geçici UI states: `sameNumberCells`, `relatedCells` O(81) useMemo performansı ile hesaplandı
     - Seçili hücre
     - Aynı sayı vurgusu
     - İlgili Satır/Sütun/Blok highlight
-    - Hata `errorCells` (.pulse-danger)
+    - Hata `errorCells` (.pulse-danger / Framer Motion animate shake)
+- [x] Remaining Number Counter: `Keyboard` 1'den 9'a kadar boardda 9 kere geçen sayıları sayar ve `isDone` ise disable/dim yapar (Kalem modu hariç).
+- [x] Error Highlight Toggle: `settings.errorHighlight` ile hatalar renklendirilir. React Testing Library ile test edildi.
+
+---
+
+## ⏳ PROMPT 5 – Bulmaca Validator ve Veri Seti Üretimi
+
+**Durum: BEKLIYOR**
+
+- [ ] Validator Script (`scripts/validatePuzzles.js`):
+    - Satır/Sütun/Blok kuralları
+    - initialBoard / solutionBoard tutarlılığı
+    - Tek ve benzersiz çözüm (Backtracking Solver)
+- [ ] 90 Bulmaca Üretimi:
+    - 30 Kolay (Naked/Hidden Single, 45-50 açık hücre)
+    - 30 Orta (Pair/Triple, 30-35 açık hücre)
+    - 30 Zor (X-wing/Swordfish, 22-27 açık hücre)
+- [ ] Mükemmel bir JSON dosyası `src/constants/puzzles.json`
+- [ ] `GameScreen` MOCK veriyi kaldırıp gerçek JSON'dan okuyacak şekilde güncellenecek.
 
 
 
