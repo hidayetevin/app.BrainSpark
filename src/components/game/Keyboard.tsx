@@ -29,7 +29,7 @@ export function Keyboard({
     })
 
     return (
-        <div className="flex flex-col gap-3 p-2 sm:p-4 w-full max-w-md mx-auto z-10" style={{ paddingBottom: '5%' }}>
+        <div className="flex flex-col gap-3 p-2 sm:p-4 w-full max-w-md mx-auto z-10" style={{ paddingBottom: '20%' }}>
             {/* Tools Row (Sil, Not, İpucu) */}
             <div className="grid grid-cols-3 gap-3 px-2 mb-1">
                 <motion.button

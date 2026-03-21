@@ -12,6 +12,7 @@ import { TutorialOverlay } from '@/components/game/TutorialOverlay'
 import { ActionModal } from '@/components/modals/ActionModal'
 import { puzzles } from '@/constants/puzzles.json'
 import { AdManager } from '@/services/AdManager'
+import { Capacitor } from '@capacitor/core'
 import type { Difficulty } from '@/types/game'
 
 export default function GameScreen() {
@@ -80,6 +81,16 @@ export default function GameScreen() {
         }
     }, [isCompleted])
 
+    useEffect(() => {
+        // Ekran açıldığında banner reklamı göster
+        AdManager.showBanner()
+
+        return () => {
+            // Ekrandan çıkıldığında banner reklamı gizle
+            void AdManager.hideBanner()
+        }
+    }, [])
+
     if (!puzzleData) {
         return (
             <ScreenTransition className="flex items-center justify-center h-full">
@@ -89,7 +100,7 @@ export default function GameScreen() {
     }
 
     return (
-        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-20 bg-[var(--surface-bg)] overflow-hidden">
+        <ScreenTransition className="flex flex-col h-[100dvh] w-full items-center justify-between pb-2 bg-[var(--surface-bg)] overflow-hidden">
             <TopBar />
 
             <div className="relative flex-1 w-full flex flex-col items-center justify-center min-h-[40%]">
@@ -137,6 +148,13 @@ export default function GameScreen() {
                 pencilMode={false}
                 onTogglePencil={() => { }}
             />
+
+            {/* Reklam Slotu (Yalnızca Web'de Önizleme Amaçlı) */}
+            {Capacitor.getPlatform() === 'web' && (
+                <div className="w-full h-[50px] bg-slate-800/80 border-t border-white/5 flex items-center justify-center text-[10px] text-indigo-300/50 font-mono tracking-widest uppercase mb-4">
+                    — AdMob Banner Placeholder —
+                </div>
+            )}
 
             <GameOverModal
                 isVisible={lives === 0 && !isCompleted}
