@@ -90,6 +90,16 @@ export const translations = {
             dailyChallenge: "Günün\nGörevi",
             tutorial: "Öğretici",
             settings: "Ayarlar"
+        },
+        daily: {
+            title: "Günlük Görev",
+            puzzleTitle: "Günün Bulmacası",
+            streakLabel: "Günlük Seri",
+            resetLabel: "Yenilenme",
+            claimedMessage: "Bugünkü ödülü zaten aldın!",
+            startChallenge: "Göreve Başla 🚀",
+            footerNote: "Günlük bulmaca internet saatine (WorldTimeAPI) duyarlıdır, hile yapılamaz.",
+            locale: 'tr-TR'
         }
     },
     en: {
@@ -181,6 +191,16 @@ export const translations = {
             dailyChallenge: "Daily\nChallenge",
             tutorial: "Tutorial",
             settings: "Settings"
+        },
+        daily: {
+            title: "Daily Challenge",
+            puzzleTitle: "Daily Puzzle",
+            streakLabel: "Daily Streak",
+            resetLabel: "Resets In",
+            claimedMessage: "You have already claimed today's reward!",
+            startChallenge: "Start Challenge 🚀",
+            footerNote: "Daily challenge is sensitive to world time (WorldTimeAPI), anti-cheat enabled.",
+            locale: 'en-US'
         }
     }
 }
