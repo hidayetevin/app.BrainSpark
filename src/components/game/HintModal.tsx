@@ -62,7 +62,7 @@ export function HintModal({ isOpen, onClose, onWatchAd, onSpendCoins, coins }: H
                         </p>
 
                         <div style={{ marginTop: '1rem', height: '2rem', padding: '1rem' }} className="flex items-center gap-1.5 mb-8 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Bakiye:</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.game.balance}:</span>
                             <span className="text-sm font-black text-amber-300">💎 {coins}</span>
                         </div>
 
