@@ -111,11 +111,16 @@ export default function GameScreen() {
     }
 
     const handleWatchAdHint = async () => {
-        const success = await AdManager.showRewarded()
-        if (success) {
+        const result = await AdManager.showRewarded()
+        if (result === 'success') {
             if (selectedCell !== null) useHint(selectedCell)
             setShowHintModal(false)
-        } else {
+        } else if (result === 'not_ready') {
+            setHintFeedback({
+                title: t.game.hint,
+                message: t.game.adNotReady
+            })
+        } else if (result === 'cancelled') {
             setHintFeedback({
                 title: t.game.hint,
                 message: t.game.adCancelled

@@ -165,25 +165,35 @@ class AdManagerService {
         }
     }
 
-    async showRewarded(): Promise<boolean> {
+    async showRewarded(): Promise<'success' | 'not_ready' | 'cancelled'> {
         await this.waitInit()
         return new Promise(async (resolve) => {
             if (Capacitor.getPlatform() === 'web') {
-                resolve(true)
+                resolve('success')
                 return
             }
             if (!this.rewardedLoaded) {
-                // Eğer yüklü değilse yüklemeyi tetikle ve bekleme
+                // Eğer yüklü değilse yüklemeyi tetikle
                 void this.prepareRewarded()
-                resolve(false)
+                resolve('not_ready')
                 return
             }
             let rewarded = false
             const rewardListener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewarded = true })
             const dismissListener = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-                rewardListener.remove(); dismissListener.remove(); resolve(rewarded); this.rewardedLoaded = false; void this.prepareRewarded()
+                rewardListener.remove()
+                dismissListener.remove()
+                resolve(rewarded ? 'success' : 'cancelled')
+                this.rewardedLoaded = false
+                void this.prepareRewarded()
             })
-            try { await AdMob.showRewardVideoAd() } catch (e) { rewardListener.remove(); dismissListener.remove(); resolve(false) }
+            try {
+                await AdMob.showRewardVideoAd()
+            } catch (e) {
+                rewardListener.remove()
+                dismissListener.remove()
+                resolve('not_ready')
+            }
         })
     }
 

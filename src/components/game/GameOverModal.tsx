@@ -37,9 +37,9 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
         setAdFailed(false)
 
         try {
-            // Ödüllü reklam göster (showRewarded PROMPT 6'da hazırlandı)
-            const success = await AdManager.showRewarded()
-            if (success) {
+            // Ödüllü reklam göster
+            const result = await AdManager.showRewarded()
+            if (result === 'success') {
                 // Reklam başarıyla izlendi, oyuncuyu canlandır
                 onRevive()
             } else {

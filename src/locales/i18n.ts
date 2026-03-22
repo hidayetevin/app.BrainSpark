@@ -69,6 +69,7 @@ export const translations = {
             spendCoinsLabel: "5 Coin 💎",
             noCoinsWarning: "Yeterli coinin yok! Reklam izleyerek ücretsiz ipucu alabilirsin.",
             adCancelled: "Reklam yarıda kesildi, ödül alınamadı.",
+            adNotReady: "Reklam henüz hazır değil, lütfen birkaç saniye sonra tekrar deneyin.",
             ok: "Tamam"
         },
         levels: {
@@ -177,6 +178,7 @@ export const translations = {
             spendCoinsLabel: "5 Coins 💎",
             noCoinsWarning: "Not enough coins! You can get a free hint by watching an ad.",
             adCancelled: "Ad was not finished, no reward given.",
+            adNotReady: "Ad is not ready yet, please try again in a few seconds.",
             ok: "OK"
         },
         levels: {
