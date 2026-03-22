@@ -102,7 +102,7 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                                     onClick={onRestart}
                                     disabled={!showSkipButtons}
                                     style={{ height: '3rem' }}
-                                    className={`w-full rounded-2xl glass border border-white/10 text-slate-200 font-bold transition-all ${!showSkipButtons ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:bg-white/5'
+                                    className={`w-full rounded-2xl glass border border-white/10 text-slate-200 font-bold transition-all ${!showSkipButtons ? 'opacity-20 grayscale cursor-not-allowed' : 'hover:bg-white/5'
                                         }`}
                                 >
                                     {t.game.restart}
@@ -111,7 +111,7 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                                     onClick={onHome}
                                     disabled={!showSkipButtons}
                                     style={{ height: '3rem' }}
-                                    className={`w-full rounded-2xl glass border border-white/10 text-rose-400 font-bold transition-all ${!showSkipButtons ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:bg-white/5'
+                                    className={`w-full rounded-2xl glass border border-white/10 text-rose-400 font-bold transition-all ${!showSkipButtons ? 'opacity-20 grayscale cursor-not-allowed' : 'hover:bg-white/5'
                                         }`}
                                 >
                                     {t.game.menu}

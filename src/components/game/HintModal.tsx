@@ -78,23 +78,17 @@ export function HintModal({ isOpen, onClose, onWatchAd, onSpendCoins, coins }: H
                                 {t.game.watchAdLabel}
                             </motion.button>
 
-                            {/* COIN BUTTON (delayed) */}
-                            <AnimatePresence>
-                                {showCoinBtn && (
-                                    <motion.button
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        whileHover={{ scale: 1.02 }}
-                                        style={{ height: '3rem', marginTop: '.5rem' }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={onSpendCoins}
-                                        className="w-full py-4 rounded-2xl glass-strong border border-white/10 text-amber-300 font-black text-lg transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <span className="text-xl">💎</span>
-                                        {t.game.spendCoinsLabel}
-                                    </motion.button>
-                                )}
-                            </AnimatePresence>
+                            {/* COIN BUTTON */}
+                            <button
+                                onClick={onSpendCoins}
+                                disabled={!showCoinBtn}
+                                style={{ height: '3rem', marginTop: '.5rem' }}
+                                className={`w-full rounded-2xl glass-strong border border-white/10 text-amber-300 font-black text-lg transition-all flex items-center justify-center gap-2 ${!showCoinBtn ? 'opacity-20 grayscale cursor-not-allowed' : 'hover:scale-[1.01] active:scale-95'
+                                    }`}
+                            >
+                                <span className="text-xl">💎</span>
+                                {t.game.spendCoinsLabel}
+                            </button>
                         </div>
                     </motion.div>
                 </motion.div>
