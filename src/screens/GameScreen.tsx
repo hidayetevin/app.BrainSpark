@@ -59,6 +59,19 @@ export default function GameScreen() {
         return () => window.removeEventListener('app:back-on-game', handleBack)
     }, [])
 
+    // TIMER LOGIC
+    useEffect(() => {
+        let timer: any
+        if (!isPaused && !isCompleted && lives > 0) {
+            timer = setInterval(() => {
+                useGameStore.getState().setElapsedTime(useGameStore.getState().elapsedTime + 1)
+            }, 1000)
+        }
+        return () => {
+            if (timer) clearInterval(timer)
+        }
+    }, [isPaused, isCompleted, lives])
+
     useEffect(() => {
         let actualPuzzle: any = null
 
