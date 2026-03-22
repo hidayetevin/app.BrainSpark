@@ -10,6 +10,7 @@ import { GameOverModal } from '@/components/game/GameOverModal'
 import { LevelCompleteModal } from '@/components/game/LevelCompleteModal'
 import { TutorialOverlay } from '@/components/game/TutorialOverlay'
 import { ActionModal } from '@/components/modals/ActionModal'
+import { HintModal } from '@/components/game/HintModal'
 import { puzzles } from '@/constants/puzzles.json'
 import { AdManager } from '@/services/AdManager'
 import { useTranslation } from '@/locales/i18n'
@@ -35,16 +36,17 @@ export default function GameScreen() {
         togglePencilMode,
         saveGame,
         removeNumber,
+        coins,
+        addCoins,
     } = useGameStore()
 
     const [puzzleData, setPuzzleData] = useState<any>(null)
-
-    // ERROR FIX: puzzleData parametresini geçiyoruz.
     const { placeNumber, useHint, toggleNote } = useSudokuEngine(puzzleData)
 
     const [showExitModal, setShowExitModal] = useState(false)
     const [showHintWarning, setShowHintWarning] = useState(false)
-    const [showAdFailed, setShowAdFailed] = useState(false)
+    const [showHintModal, setShowHintModal] = useState(false)
+    const [hintFeedback, setHintFeedback] = useState<{ title: string; message: string } | null>(null)
     const [exitModalAction, setExitModalAction] = useState<{ onConfirm: () => void; onCancel: () => void } | null>(null)
 
     useEffect(() => {
@@ -61,11 +63,9 @@ export default function GameScreen() {
         let actualPuzzle: any = null
 
         if (difficulty === 'daily') {
-            // Pick a hard puzzle based on date
             const hardPuzzles = (puzzles as any[]).filter(it => it.difficulty === 'hard')
             if (hardPuzzles.length > 0) {
                 const today = new Date()
-                // Day of year for a somewhat unique index
                 const start = new Date(today.getFullYear(), 0, 0)
                 const diff = (today.getTime() - start.getTime()) + ((start.getTimezoneOffset() - today.getTimezoneOffset()) * 60 * 1000)
                 const oneDay = 1000 * 60 * 60 * 24
@@ -81,15 +81,11 @@ export default function GameScreen() {
         if (actualPuzzle) {
             setPuzzleData(actualPuzzle)
             resetGame(actualPuzzle as Difficulty | any)
-        } else if (difficulty && chapter) {
-            // Fallback: If not daily and not found, navigate back or show error
-            // setPuzzleData stays null -> spinner shows
         }
     }, [difficulty, chapter, puzzleId, resetGame])
 
     const handleNumberPress = (num: number) => {
         if (selectedCell === null || isPaused || isCompleted || lives === 0) return
-
         if (pencilMode) {
             toggleNote(selectedCell, num)
         } else {
@@ -102,22 +98,41 @@ export default function GameScreen() {
         removeNumber(selectedCell)
     }
 
-    const handleHint = async () => {
+    const handleHintTrigger = () => {
         if (isPaused || isCompleted || lives === 0) return
-
         if (selectedCell === null) {
             setShowHintWarning(true)
             return
         }
-
         const currentValue = useGameStore.getState().grid[selectedCell]
         if (currentValue !== 0) return
 
+        setShowHintModal(true)
+    }
+
+    const handleWatchAdHint = async () => {
         const success = await AdManager.showRewarded()
         if (success) {
-            useHint(selectedCell)
+            if (selectedCell !== null) useHint(selectedCell)
+            setShowHintModal(false)
         } else {
-            setShowAdFailed(true)
+            setHintFeedback({
+                title: t.game.hint,
+                message: t.game.adCancelled
+            })
+        }
+    }
+
+    const handleSpendCoinsHint = () => {
+        if (coins >= 5) {
+            addCoins(-5)
+            if (selectedCell !== null) useHint(selectedCell)
+            setShowHintModal(false)
+        } else {
+            setHintFeedback({
+                title: t.game.hint,
+                message: t.game.noCoinsWarning
+            })
         }
     }
 
@@ -144,6 +159,24 @@ export default function GameScreen() {
                     <SudokuGrid />
                 </div>
 
+                {/* HINT MODAL */}
+                <HintModal
+                    isOpen={showHintModal}
+                    coins={coins}
+                    onClose={() => setShowHintModal(false)}
+                    onWatchAd={handleWatchAdHint}
+                    onSpendCoins={handleSpendCoinsHint}
+                />
+
+                {/* HINT FEEDBACK (Error/Cancelled) */}
+                <ActionModal
+                    isOpen={!!hintFeedback}
+                    title={hintFeedback?.title || ""}
+                    message={hintFeedback?.message || ""}
+                    confirmLabel={t.game.ok}
+                    onConfirm={() => setHintFeedback(null)}
+                />
+
                 {/* PAUSE MODAL */}
                 <ActionModal
                     isOpen={isPaused && !isCompleted && lives > 0}
@@ -158,22 +191,13 @@ export default function GameScreen() {
                     }}
                 />
 
-                {/* HINT WARNING MODAL */}
+                {/* HINT WARNING MODAL (NO CELL SELECTED) */}
                 <ActionModal
                     isOpen={showHintWarning}
                     title={t.game.hint}
                     message={t.game.selectCellToHint}
                     confirmLabel={t.game.ok}
                     onConfirm={() => setShowHintWarning(false)}
-                />
-
-                {/* AD FAILED MODAL */}
-                <ActionModal
-                    isOpen={showAdFailed}
-                    title={t.game.hint}
-                    message={t.game.adFailed}
-                    confirmLabel={t.game.ok}
-                    onConfirm={() => setShowAdFailed(false)}
                 />
 
                 {/* EXIT CONFIRMATION MODAL */}
@@ -198,7 +222,7 @@ export default function GameScreen() {
             <Keyboard
                 onNumberPress={handleNumberPress}
                 onErase={handleErase}
-                onHint={handleHint}
+                onHint={handleHintTrigger}
                 onTogglePencil={() => togglePencilMode()}
                 pencilMode={pencilMode}
             />

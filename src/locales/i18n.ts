@@ -63,6 +63,12 @@ export const translations = {
             nextLevel: "Sonraki Bölüm ⏭️",
             selectCellToHint: "İpucu almak için önce boş bir hücre seçin.",
             daily: "Günün Görevi",
+            hintModalTitle: "İpucu Gerekli mi?",
+            hintModalDesc: "Zekânı konuşturmaya devam et! Yolunu aydınlatmak için bir ipucu seç.",
+            watchAdLabel: "İzle İpucu Al 🎥",
+            spendCoinsLabel: "5 Coin 💎",
+            noCoinsWarning: "Yeterli coinin yok! Reklam izleyerek ücretsiz ipucu alabilirsin.",
+            adCancelled: "Reklam yarıda kesildi, ödül alınamadı.",
             ok: "Tamam"
         },
         levels: {
@@ -165,6 +171,12 @@ export const translations = {
             nextLevel: "Next Level ⏭️",
             selectCellToHint: "Select an empty cell first to get a hint.",
             daily: "Daily Challenge",
+            hintModalTitle: "Need a Hint?",
+            hintModalDesc: "Keep your brilliance shining! Choose a hint to light your path.",
+            watchAdLabel: "Watch & Get Hint 🎥",
+            spendCoinsLabel: "5 Coins 💎",
+            noCoinsWarning: "Not enough coins! You can get a free hint by watching an ad.",
+            adCancelled: "Ad was not finished, no reward given.",
             ok: "OK"
         },
         levels: {
