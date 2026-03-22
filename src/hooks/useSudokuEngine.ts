@@ -90,6 +90,15 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
         const pid = `${store.difficulty}_${store.chapter.toString().padStart(3, '0')}`
         store.clearSavedState(pid)
 
+        // İstatistikleri kaydet (Başarım yüzdesi buradan beslenir)
+        store.savePuzzleStats(pid, {
+            stars,
+            mistakes: store.mistakes,
+            hintsUsed: store.hintsUsed,
+            elapsedTime: store.elapsedTime,
+            bestTime: store.elapsedTime
+        })
+
         store.setCompleted(true)
         AudioService.playSuccess()
         if (store.settings.vibrationEnabled) {

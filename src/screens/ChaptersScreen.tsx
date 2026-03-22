@@ -62,25 +62,26 @@ export default function ChaptersScreen() {
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: i * 0.02, duration: 0.3 }}
                                 key={i}
-                                disabled={!isUnlocked}
+                                disabled={!isUnlocked || isCompleted}
                                 id={`btn-chapter-${i + 1}`}
                                 onClick={() => navigate(`/game/${diffMode}/${i + 1}`)}
                                 className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center font-bold text-xl transition-all ${isCompleted
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 active:scale-95'
+                                    ? 'bg-white/5 text-emerald-400 border-2 border-emerald-500/40 opacity-80 cursor-default'
                                     : isUnlocked
                                         ? 'bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-lg active:scale-90 hover:scale-[1.03] border border-white/20'
                                         : 'bg-slate-800/50 text-slate-600 border border-slate-700/50 cursor-not-allowed'
                                     }`}
                             >
-                                {isCompleted && (
-                                    <div className="absolute top-1 right-1">
-                                        <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                        </svg>
+                                {isCompleted ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="Tour Checkmark bg-emerald-500 rounded-full p-1 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                                            <svg className="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <span className="text-[10px] uppercase tracking-tighter opacity-70">Tamam</span>
                                     </div>
-                                )}
-
-                                {isUnlocked ? (
+                                ) : isUnlocked ? (
                                     <span>{i + 1}</span>
                                 ) : (
                                     <svg className="w-6 h-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
