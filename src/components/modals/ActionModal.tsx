@@ -35,7 +35,6 @@ export function ActionModal({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"
-                        onClick={onCancel}
                     />
 
                     {/* Modal Content */}

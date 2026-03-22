@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from '@/locales/i18n'
-import { XMarkIcon } from '@heroicons/react/24/solid'
 
 interface HintModalProps {
     isOpen: boolean
@@ -28,11 +27,9 @@ export function HintModal({ isOpen, onClose, onWatchAd, onSpendCoins, coins }: H
     return (
         <AnimatePresence>
             {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+                <div
+                    className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -41,13 +38,7 @@ export function HintModal({ isOpen, onClose, onWatchAd, onSpendCoins, coins }: H
                         exit={{ scale: 0.9, opacity: 0, y: 10 }}
                         className="glass-strong rounded-[2.5rem] p-8 flex flex-col items-center max-w-sm w-full shadow-2xl border border-indigo-500/20 relative"
                     >
-                        {/* Close Button */}
-                        <button
-                            onClick={onClose}
-                            className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 text-slate-400 transition-colors"
-                        >
-                            <XMarkIcon className="w-6 h-6" />
-                        </button>
+                        {/* Action-Lock: Modal can only be dismissed via choice buttons or parent logic */}
 
                         <div style={{ marginTop: '1rem' }} className="w-20 h-20 rounded-3xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-6">
                             <span className="text-5xl drop-shadow-lg">💡</span>
@@ -89,9 +80,17 @@ export function HintModal({ isOpen, onClose, onWatchAd, onSpendCoins, coins }: H
                                 <span className="text-xl">💎</span>
                                 {t.game.spendCoinsLabel}
                             </button>
+
+                            {/* Secondary Exit Option */}
+                            <button
+                                onClick={onClose}
+                                className="mt-4 text-slate-400 text-sm font-bold hover:text-white transition-colors"
+                            >
+                                {t.game.exitCancel}
+                            </button>
                         </div>
                     </motion.div>
-                </motion.div>
+                </div>
             )}
         </AnimatePresence>
     )

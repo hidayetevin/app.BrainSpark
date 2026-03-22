@@ -163,65 +163,6 @@ export default function GameScreen() {
                 <div className="w-full flex items-center justify-center">
                     <SudokuGrid />
                 </div>
-
-                {/* HINT MODAL */}
-                <HintModal
-                    isOpen={showHintModal}
-                    coins={coins}
-                    onClose={() => setShowHintModal(false)}
-                    onWatchAd={handleWatchAdHint}
-                    onSpendCoins={handleSpendCoinsHint}
-                />
-
-                {/* HINT FEEDBACK (Error/Cancelled) */}
-                <ActionModal
-                    isOpen={!!hintFeedback}
-                    title={hintFeedback?.title || ""}
-                    message={hintFeedback?.message || ""}
-                    confirmLabel={t.game.ok}
-                    onConfirm={() => setHintFeedback(null)}
-                />
-
-                {/* PAUSE MODAL */}
-                <ActionModal
-                    isOpen={isPaused && !isCompleted && lives > 0}
-                    title={t.game.paused}
-                    message={t.game.pauseMessage}
-                    confirmLabel={t.game.resume}
-                    cancelLabel={t.game.menu}
-                    onConfirm={() => setPaused(false)}
-                    onCancel={() => {
-                        saveGame()
-                        navigate('/')
-                    }}
-                />
-
-                {/* HINT WARNING MODAL (NO CELL SELECTED) */}
-                <ActionModal
-                    isOpen={showHintWarning}
-                    title={t.game.hint}
-                    message={t.game.selectCellToHint}
-                    confirmLabel={t.game.ok}
-                    onConfirm={() => setShowHintWarning(false)}
-                />
-
-                {/* EXIT CONFIRMATION MODAL */}
-                <ActionModal
-                    isOpen={showExitModal}
-                    title={t.game.exitTitle}
-                    message={t.game.exitMessage}
-                    confirmLabel={t.game.exitConfirm}
-                    cancelLabel={t.game.exitCancel}
-                    type="danger"
-                    onConfirm={() => {
-                        setShowExitModal(false)
-                        exitModalAction?.onConfirm()
-                    }}
-                    onCancel={() => {
-                        setShowExitModal(false)
-                        exitModalAction?.onCancel()
-                    }}
-                />
             </div>
 
             <Keyboard
@@ -252,6 +193,61 @@ export default function GameScreen() {
             />
 
             <TutorialOverlay />
+
+            {/* MODALS (Fixed Position via z-index or DOM order) */}
+            <HintModal
+                isOpen={showHintModal}
+                coins={coins}
+                onClose={() => setShowHintModal(false)}
+                onWatchAd={handleWatchAdHint}
+                onSpendCoins={handleSpendCoinsHint}
+            />
+
+            <ActionModal
+                isOpen={!!hintFeedback}
+                title={hintFeedback?.title || ""}
+                message={hintFeedback?.message || ""}
+                confirmLabel={t.game.ok}
+                onConfirm={() => setHintFeedback(null)}
+            />
+
+            <ActionModal
+                isOpen={isPaused && !isCompleted && lives > 0}
+                title={t.game.paused}
+                message={t.game.pauseMessage}
+                confirmLabel={t.game.resume}
+                cancelLabel={t.game.menu}
+                onConfirm={() => setPaused(false)}
+                onCancel={() => {
+                    saveGame()
+                    navigate('/')
+                }}
+            />
+
+            <ActionModal
+                isOpen={showHintWarning}
+                title={t.game.hint}
+                message={t.game.selectCellToHint}
+                confirmLabel={t.game.ok}
+                onConfirm={() => setShowHintWarning(false)}
+            />
+
+            <ActionModal
+                isOpen={showExitModal}
+                title={t.game.exitTitle}
+                message={t.game.exitMessage}
+                confirmLabel={t.game.exitConfirm}
+                cancelLabel={t.game.exitCancel}
+                type="danger"
+                onConfirm={() => {
+                    setShowExitModal(false)
+                    exitModalAction?.onConfirm()
+                }}
+                onCancel={() => {
+                    setShowExitModal(false)
+                    exitModalAction?.onCancel()
+                }}
+            />
         </ScreenTransition>
     )
 }
