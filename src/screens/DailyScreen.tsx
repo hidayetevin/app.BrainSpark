@@ -86,7 +86,7 @@ export default function DailyScreen() {
                     ) : (
                         <button
                             style={{ height: '3rem' }}
-                            className="w-full py-5 rounded-3xl bg-gradient-to-r from-fuchsia-500 to-orange-500 text-white font-black text-xl shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
+                            className="w-full py-5  bg-gradient-to-r from-fuchsia-500 to-orange-500 text-white font-black text-xl shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
                             onClick={() => navigate('/game/daily/1')}
                         >
                             {t.daily.startChallenge}
