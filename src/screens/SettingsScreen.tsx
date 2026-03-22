@@ -107,7 +107,7 @@ export default function SettingsScreen() {
                 </div>
 
                 <p className="text-center text-xs text-slate-500 font-medium mt-auto px-4 z-10 pb-4">
-                    Brain Spark v1.0.0
+                    Brain Spark v1.0.1
                 </p>
             </div>
         </ScreenTransition>

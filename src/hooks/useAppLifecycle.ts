@@ -4,6 +4,7 @@ import { App as CapacitorApp } from '@capacitor/app'
 import type { PluginListenerHandle } from '@capacitor/core'
 import { useGameStore } from '@/stores/gameStore'
 import { AudioService } from '@/services/AudioService'
+import { AdManager } from '@/services/AdManager'
 
 /**
  * useAppLifecycle
@@ -45,8 +46,10 @@ export function useAppLifecycle() {
                     } else {
                         // Ön plana döndü → müziği devam ettir (Eğer ayar açıksa)
                         AudioService.resumeBgMusic()
-                        if (locationRef.current.startsWith('/game/')) {
-                            // Oyun ekranındaysa duraklatma modunu aktif et
+
+                        // REKLAM DÖNÜŞÜ KONTROLÜ: Eğer reklamdan dönüyorsa oyunu zorla duraklatma
+                        if (locationRef.current.startsWith('/game/') && !AdManager.isShowingAd()) {
+                            // Oyun ekranındaysa ve reklamda değilse duraklatma modunu aktif et
                             useGameStore.getState().setPaused(true)
                             window.dispatchEvent(new CustomEvent('app:resume-on-game'))
                         }

@@ -34,6 +34,11 @@ class AdManagerService {
 
     private interstitialLoaded = false
     private rewardedLoaded = false
+    private isAdShowing = false
+
+    public isShowingAd() {
+        return this.isAdShowing
+    }
 
     async init() {
         if (this.initPromise) return this.initPromise
@@ -111,27 +116,35 @@ class AdManagerService {
     private setupListeners() {
         // Interstitial
         AdMob.addListener(InterstitialAdPluginEvents.Showed, () => {
+            this.isAdShowing = true
             AudioService.pauseBgMusic()
         })
         AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+            // Grace period to prevent lifecycle hook from pausing during focused transition
+            setTimeout(() => { this.isAdShowing = false }, 500)
             AudioService.resumeBgMusic()
             this.interstitialLoaded = false
             void this.prepareInterstitial()
         })
         AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, () => {
+            setTimeout(() => { this.isAdShowing = false }, 500)
             AudioService.resumeBgMusic()
         })
 
         // Rewarded
         AdMob.addListener(RewardAdPluginEvents.Showed, () => {
+            this.isAdShowing = true
             AudioService.pauseBgMusic()
         })
         AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+            // Grace period to prevent lifecycle hook from pausing during focused transition
+            setTimeout(() => { this.isAdShowing = false }, 500)
             AudioService.resumeBgMusic()
             this.rewardedLoaded = false
             void this.prepareRewarded()
         })
         AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => {
+            setTimeout(() => { this.isAdShowing = false }, 500)
             AudioService.resumeBgMusic()
         })
     }
