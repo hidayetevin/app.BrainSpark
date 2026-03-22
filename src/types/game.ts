@@ -5,7 +5,7 @@
 
 // ─── Puzzle ──────────────────────────────────────────────────────────────────
 
-export type Difficulty = 'easy' | 'medium' | 'hard'
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'daily'
 
 export interface PuzzleData {
     id: string

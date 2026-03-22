@@ -62,6 +62,7 @@ export const translations = {
             mistakes: "Hata",
             nextLevel: "Sonraki Bölüm ⏭️",
             selectCellToHint: "İpucu almak için önce boş bir hücre seçin.",
+            daily: "Günün Görevi",
             ok: "Tamam"
         },
         levels: {
@@ -163,6 +164,7 @@ export const translations = {
             mistakes: "Mistakes",
             nextLevel: "Next Level ⏭️",
             selectCellToHint: "Select an empty cell first to get a hint.",
+            daily: "Daily Challenge",
             ok: "OK"
         },
         levels: {

@@ -31,6 +31,7 @@ export function calculateStars(
         easy: 180,   // 3 dk
         medium: 480, // 8 dk
         hard: 900,   // 15 dk
+        daily: 900,  // Günlük görev de hard seviyesinde
     }
 
     const timeExceeded = elapsedTime > limits[difficulty]
@@ -74,8 +75,14 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
 
     const handleWin = async () => {
         const store = useGameStore.getState()
-        const stars = calculateStars(store.difficulty, store.elapsedTime, store.mistakes)
+        const stars = calculateStars(store.difficulty === 'daily' ? 'hard' : store.difficulty as Difficulty, store.elapsedTime, store.mistakes)
         store.setStars(stars)
+
+        // Günlük görev tamamlandıysa kaydet ve seri artır
+        if (store.difficulty === 'daily') {
+            store.claimDailyReward(Date.now())
+        }
+
         store.setCompleted(true)
         AudioService.playSuccess()
         if (store.settings.vibrationEnabled) {

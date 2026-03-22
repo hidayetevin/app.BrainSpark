@@ -58,12 +58,34 @@ export default function GameScreen() {
     }, [])
 
     useEffect(() => {
-        const p = (puzzles as any[]).find(it => it.id === puzzleId)
-        if (p) {
-            setPuzzleData(p)
-            resetGame(p as Difficulty | any)
+        let actualPuzzle: any = null
+
+        if (difficulty === 'daily') {
+            // Pick a hard puzzle based on date
+            const hardPuzzles = (puzzles as any[]).filter(it => it.difficulty === 'hard')
+            if (hardPuzzles.length > 0) {
+                const today = new Date()
+                // Day of year for a somewhat unique index
+                const start = new Date(today.getFullYear(), 0, 0)
+                const diff = (today.getTime() - start.getTime()) + ((start.getTimezoneOffset() - today.getTimezoneOffset()) * 60 * 1000)
+                const oneDay = 1000 * 60 * 60 * 24
+                const dayOfYear = Math.floor(diff / oneDay)
+
+                const index = dayOfYear % hardPuzzles.length
+                actualPuzzle = hardPuzzles[index]
+            }
+        } else {
+            actualPuzzle = (puzzles as any[]).find(it => it.id === puzzleId)
         }
-    }, [puzzleId, resetGame])
+
+        if (actualPuzzle) {
+            setPuzzleData(actualPuzzle)
+            resetGame(actualPuzzle as Difficulty | any)
+        } else if (difficulty && chapter) {
+            // Fallback: If not daily and not found, navigate back or show error
+            // setPuzzleData stays null -> spinner shows
+        }
+    }, [difficulty, chapter, puzzleId, resetGame])
 
     const handleNumberPress = (num: number) => {
         if (selectedCell === null || isPaused || isCompleted || lives === 0) return
