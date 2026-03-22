@@ -97,30 +97,26 @@ export function GameOverModal({ isVisible, onRestart, onHome, onRevive }: GameOv
                                 </motion.button>
                             )}
 
-                            <AnimatePresence>
-                                {showSkipButtons && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        className="flex flex-col gap-3 overflow-hidden"
-                                    >
-                                        <button
-                                            onClick={onRestart}
-                                            style={{ height: '3rem' }}
-                                            className="w-full py-4 rounded-2xl glass border border-white/10 text-slate-200 font-bold hover:bg-white/5 transition-colors"
-                                        >
-                                            {t.game.restart}
-                                        </button>
-                                        <button
-                                            onClick={onHome}
-                                            style={{ height: '3rem' }}
-                                            className="w-full py-4 rounded-2xl glass border border-white/10 text-rose-400 font-bold hover:bg-white/5 transition-colors"
-                                        >
-                                            {t.game.menu}
-                                        </button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            <div className="flex flex-col gap-3 mt-4 w-full">
+                                <button
+                                    onClick={onRestart}
+                                    disabled={!showSkipButtons}
+                                    style={{ height: '3rem' }}
+                                    className={`w-full rounded-2xl glass border border-white/10 text-slate-200 font-bold transition-all ${!showSkipButtons ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:bg-white/5'
+                                        }`}
+                                >
+                                    {t.game.restart}
+                                </button>
+                                <button
+                                    onClick={onHome}
+                                    disabled={!showSkipButtons}
+                                    style={{ height: '3rem' }}
+                                    className={`w-full rounded-2xl glass border border-white/10 text-rose-400 font-bold transition-all ${!showSkipButtons ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:bg-white/5'
+                                        }`}
+                                >
+                                    {t.game.menu}
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </motion.div>
