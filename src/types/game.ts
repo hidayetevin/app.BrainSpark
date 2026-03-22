@@ -84,6 +84,8 @@ export interface PersistedSlice {
     coins: number
     /** PuzzleID bazlı kaydedilmiş oyunlar */
     savedStates: SavedStatesMap
+    /** En son oynanan bulmaca ID'si (Home screen resume butonu için) */
+    lastActivePuzzleId: string | null
 }
 
 // ─── Game Store State ─────────────────────────────────────────────────────────

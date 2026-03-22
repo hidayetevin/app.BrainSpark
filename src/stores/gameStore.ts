@@ -49,6 +49,7 @@ const defaultPersistedSlice: PersistedSlice = {
     adsDisabled: false,
     coins: 0,
     savedStates: {},
+    lastActivePuzzleId: null,
 }
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -105,6 +106,7 @@ export const useGameStore = create<GameState>()(
 
                     return {
                         grid: newGrid,
+                        lastActivePuzzleId: puzzleId,
                         // Persist middleware'in yakalaması için savedStates'i güncelle
                         savedStates: {
                             ...state.savedStates,
@@ -138,6 +140,7 @@ export const useGameStore = create<GameState>()(
                     return {
                         grid: newGrid,
                         notes: newNotes,
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: currentSave
@@ -174,6 +177,7 @@ export const useGameStore = create<GameState>()(
 
                     return {
                         notes: newNotes,
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: currentSave
@@ -200,6 +204,7 @@ export const useGameStore = create<GameState>()(
                     return {
                         lives: newLives,
                         mistakes: state.mistakes + 1,
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: currentSave
@@ -222,6 +227,7 @@ export const useGameStore = create<GameState>()(
                     }
                     return {
                         lives,
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: currentSave
@@ -305,8 +311,6 @@ export const useGameStore = create<GameState>()(
 
             setElapsedTime: (time: number) => {
                 set(state => {
-                    // Performans için her saniye kaydedilmez; ancak kritik durumlarda veya düzenli persist ile disk senkronize olur.
-                    // İstendiği için her saniye savedStates'e basıyoruz:
                     const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
                     if (state.isCompleted) return { elapsedTime: time }
 
@@ -367,6 +371,7 @@ export const useGameStore = create<GameState>()(
 
                     return {
                         notes: newNotes,
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: currentSave
@@ -392,6 +397,7 @@ export const useGameStore = create<GameState>()(
             },
 
             resetGame: (puzzleData: PuzzleData) => {
+                const puzzleId = puzzleData.id
                 set({
                     grid: puzzleData.initialBoard.slice(),
                     initialGrid: puzzleData.initialBoard.slice(),
@@ -408,6 +414,7 @@ export const useGameStore = create<GameState>()(
                     isCompleted: false,
                     selectedCell: null,
                     pencilMode: false,
+                    lastActivePuzzleId: puzzleId,
                     errorCells: [],
                 })
             },
@@ -434,26 +441,31 @@ export const useGameStore = create<GameState>()(
                     isPaused: false,
                     isCompleted: false,
                     selectedCell: null,
+                    lastActivePuzzleId: puzzleId,
                     errorCells: []
                 })
             },
 
             saveGame: () => {
-                // Bu fonksiyon manuel tetikleme içindir.
-                // Biz her hamlede (placeNumber vb.) savedStates'i güncellediğimiz için
-                // persist middleware zaten anlık veriyi tutuyor.
+                // Manuel tetikleme
             },
 
             clearSavedState: (puzzleId: string) => {
                 set(state => {
                     const newSavedStates = { ...state.savedStates }
                     delete newSavedStates[puzzleId]
-                    return { savedStates: newSavedStates }
+
+                    // Eğer sildiğimiz bulmaca son aktif olan ise temizle
+                    const newLastActive = state.lastActivePuzzleId === puzzleId ? null : state.lastActivePuzzleId
+
+                    return {
+                        savedStates: newSavedStates,
+                        lastActivePuzzleId: newLastActive
+                    }
                 })
             },
 
             loadSavedGame: async (): Promise<boolean> => {
-                // Crash protection recovery (opsiyonel)
                 try {
                     const raw = await loadFromCrashProtection()
                     if (!raw) return false
@@ -462,6 +474,7 @@ export const useGameStore = create<GameState>()(
 
                     const puzzleId = saved.puzzleId
                     set(state => ({
+                        lastActivePuzzleId: puzzleId,
                         savedStates: {
                             ...state.savedStates,
                             [puzzleId]: saved
@@ -475,7 +488,7 @@ export const useGameStore = create<GameState>()(
         }),
 
         {
-            name: 'brain-spark-store-v2', // Versiyon değiştiği için map'li yeni storage
+            name: 'brain-spark-store-v3', // v3 as we added lastActivePuzzleId
             storage: capacitorStorage,
             partialize: (state): PersistedSlice => ({
                 settings: state.settings,
@@ -486,6 +499,7 @@ export const useGameStore = create<GameState>()(
                 adsDisabled: state.adsDisabled,
                 coins: state.coins,
                 savedStates: state.savedStates,
+                lastActivePuzzleId: state.lastActivePuzzleId,
             }),
             merge: (persistedState, currentState) => {
                 const ps = persistedState as PersistedSlice
@@ -499,9 +513,10 @@ export const useGameStore = create<GameState>()(
                     adsDisabled: ps.adsDisabled ?? currentState.adsDisabled,
                     coins: ps.coins ?? currentState.coins,
                     savedStates: ps.savedStates ?? {},
+                    lastActivePuzzleId: ps.lastActivePuzzleId ?? null,
                 }
             },
-            version: 2,
+            version: 3,
         },
     ),
 )

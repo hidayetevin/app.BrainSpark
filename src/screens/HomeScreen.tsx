@@ -7,8 +7,10 @@ import { useTranslation } from '@/locales/i18n'
 
 export default function HomeScreen() {
     const navigate = useNavigate()
-    const { savedState, coins } = useGameStore()
+    const { savedStates, lastActivePuzzleId, coins } = useGameStore()
     const { t } = useTranslation()
+
+    const activeSavedState = lastActivePuzzleId ? savedStates[lastActivePuzzleId] : null
 
     const handleNav = (path: string) => {
         AudioService.playClick()
@@ -68,14 +70,14 @@ export default function HomeScreen() {
                     }}
                     className="flex flex-col w-full max-w-[18rem] gap-4"
                 >
-                    {savedState && (
+                    {activeSavedState && (
                         <motion.button
                             variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}
                             whileTap={{ scale: 0.95 }}
                             id="btn-resume"
                             className="relative w-full py-4 text-lg bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 overflow-hidden group"
                             style={{ padding: '.8rem' }}
-                            onClick={() => handleNav(`/game/${savedState.difficulty}/${savedState.chapter}`)}
+                            onClick={() => handleNav(`/game/${activeSavedState.difficulty}/${activeSavedState.chapter}`)}
                         >
                             <div className="absolute inset-0 bg-white/30 translate-y-8 group-hover:translate-y-0 transition-transform blur-md" />
                             <span className="relative z-10 flex items-center gap-2">{t.home.resume}</span>
