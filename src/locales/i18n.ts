@@ -71,7 +71,8 @@ export const translations = {
             adCancelled: "Reklam yarıda kesildi, ödül alınamadı.",
             adNotReady: "Reklam henüz hazır değil, lütfen birkaç saniye sonra tekrar deneyin.",
             balance: "Bakiye",
-            ok: "Tamam"
+            ok: "Tamam",
+            completedLabel: "TAMAM"
         },
         levels: {
             title: "Zorluk Seçimi",
@@ -181,7 +182,8 @@ export const translations = {
             adCancelled: "Ad was not finished, no reward given.",
             adNotReady: "Ad is not ready yet, please try again in a few seconds.",
             balance: "Balance",
-            ok: "OK"
+            ok: "OK",
+            completedLabel: "DONE"
         },
         levels: {
             title: "Difficulty Selection",
