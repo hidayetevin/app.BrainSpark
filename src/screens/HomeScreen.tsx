@@ -7,7 +7,7 @@ import { useTranslation } from '@/locales/i18n'
 
 export default function HomeScreen() {
     const navigate = useNavigate()
-    const { savedState } = useGameStore()
+    const { savedState, coins } = useGameStore()
     const { t } = useTranslation()
 
     const handleNav = (path: string) => {
@@ -20,6 +20,18 @@ export default function HomeScreen() {
             {/* Arka plan efektleri (Ambient glow) */}
             <div className="absolute top-10 -left-10 w-64 h-64 bg-indigo-600 rounded-full blur-[100px] opacity-20" />
             <div className="absolute bottom-10 -right-10 w-64 h-64 bg-cyan-600 rounded-full blur-[100px] opacity-20" />
+
+            {/* Coin Display */}
+            <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="absolute top-12 right-6 z-20"
+            >
+                <div className="glass-strong px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 shadow-xl">
+                    <span className="text-xl leading-none">💎</span>
+                    <span className="text-lg font-black text-white leading-none">{coins}</span>
+                </div>
+            </motion.div>
 
             <div className="flex flex-col items-center justify-center p-6 w-full z-10 gap-10">
                 {/* Logo Section */}

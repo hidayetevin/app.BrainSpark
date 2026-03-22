@@ -75,6 +75,7 @@ export interface PersistedSlice {
     lastChallengeClaimDate: string
     lastTrustedTime: number
     adsDisabled: boolean
+    coins: number
     /** Son aktif oyun; null ise aktif oyun yok */
     savedState: SavedGameState | null
 }
@@ -133,6 +134,7 @@ export interface GameState extends PersistedSlice {
     savePuzzleStats: (puzzleId: string, stats: PuzzleStats) => void
     updateSettings: (newSettings: Partial<GameSettings>) => void
     claimDailyReward: (trustedTimeMs: number) => { success: boolean, newStreak: number }
+    addCoins: (amount: number) => void
     resetGame: (puzzleData: PuzzleData) => void
     resumeSavedGame: (puzzleData: PuzzleData) => void
     /** Mevcut oyun state'ini arka planda Preferences'a yazar */

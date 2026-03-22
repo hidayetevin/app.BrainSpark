@@ -83,6 +83,9 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
             store.claimDailyReward(Date.now())
         }
 
+        // Ödül: Her galibiyet için 5 coin
+        store.addCoins(5)
+
         store.setCompleted(true)
         AudioService.playSuccess()
         if (store.settings.vibrationEnabled) {

@@ -78,6 +78,7 @@ const defaultPersistedSlice: PersistedSlice = {
     lastChallengeClaimDate: '',
     lastTrustedTime: 0,
     adsDisabled: false,
+    coins: 0,
     savedState: null,
 }
 
@@ -234,6 +235,10 @@ export const useGameStore = create<GameState>()(
                 })
 
                 return { success: true, newStreak }
+            },
+
+            addCoins: (amount: number) => {
+                set(state => ({ coins: state.coins + amount }))
             },
 
             selectCell: (cellIndex: number | null) => {
@@ -423,6 +428,7 @@ export const useGameStore = create<GameState>()(
                 lastChallengeClaimDate: state.lastChallengeClaimDate,
                 lastTrustedTime: state.lastTrustedTime,
                 adsDisabled: state.adsDisabled,
+                coins: state.coins,
                 savedState: state.grid.some(v => v !== 0)
                     ? {
                         difficulty: state.difficulty,
@@ -449,6 +455,7 @@ export const useGameStore = create<GameState>()(
                     lastChallengeClaimDate: ps.lastChallengeClaimDate ?? currentState.lastChallengeClaimDate,
                     lastTrustedTime: ps.lastTrustedTime ?? currentState.lastTrustedTime,
                     adsDisabled: ps.adsDisabled ?? currentState.adsDisabled,
+                    coins: ps.coins ?? currentState.coins,
                     savedState: ps.savedState ?? null,
                 }
 
