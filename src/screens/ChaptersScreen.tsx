@@ -4,36 +4,57 @@ import { motion } from 'framer-motion'
 import ScreenTransition from '@/components/ScreenTransition'
 import { useGameStore } from '@/stores/gameStore'
 import { useTranslation } from '@/locales/i18n'
+import { puzzles } from '@/constants/puzzles.json'
 
 export default function ChaptersScreen() {
     const navigate = useNavigate()
     const { t } = useTranslation()
     const { difficulty } = useParams<{ difficulty: string }>()
-    const { puzzleStats } = useGameStore()
+    const { puzzleStats, savedStates } = useGameStore()
 
     const diffMode = difficulty || 'easy'
     const label = t.game[diffMode as keyof typeof t.game] || diffMode
 
     // İlerleme mantığı hesaplanıyor
-    const { maxCompletedIndex, statsMap } = useMemo(() => {
+    const { maxCompletedIndex, statsMap, chapterProgress } = useMemo(() => {
         let maxIdx = -1
         const map: boolean[] = Array(30).fill(false)
+        const progressMap: number[] = Array(30).fill(0)
+
         for (let i = 0; i < 30; i++) {
             const puzzleId = `${diffMode}_${(i + 1).toString().padStart(3, '0')}`
+
+            // 1. TAMAMLANANLAR (Yıldız almış olanlar)
             const stat = puzzleStats[puzzleId]
             if (stat && stat.stars > 0) {
                 map[i] = true
                 maxIdx = Math.max(maxIdx, i)
             }
+
+            // 2. DEVAM EDENLER (savedStates'te olanlar)
+            const saved = savedStates[puzzleId]
+            if (saved && !map[i]) {
+                const puzzle = (puzzles as any[]).find(p => p.id === puzzleId)
+                if (puzzle) {
+                    const initialCount = puzzle.initialBoard.filter((v: number) => v !== 0).length
+                    const currentCount = saved.grid.filter((v: number) => v !== 0).length
+                    const totalToFill = 81 - initialCount
+                    const filledByPlayer = currentCount - initialCount
+                    if (totalToFill > 0) {
+                        progressMap[i] = Math.max(0, Math.floor((filledByPlayer / totalToFill) * 100))
+                    }
+                }
+            }
         }
-        return { maxCompletedIndex: maxIdx, statsMap: map }
-    }, [puzzleStats, diffMode])
+        return { maxCompletedIndex: maxIdx, statsMap: map, chapterProgress: progressMap }
+    }, [puzzleStats, savedStates, diffMode])
 
     // "Mevcut + sonraki 2: aktif" -> maxCompletedIndex + 3'e kadar açık
     const getLevelStatus = (i: number) => {
         const isCompleted = statsMap[i]
+        const progress = chapterProgress[i]
         const isUnlocked = i <= maxCompletedIndex + 3
-        return { isCompleted, isUnlocked }
+        return { isCompleted, isUnlocked, progress }
     }
 
     return (
@@ -54,7 +75,7 @@ export default function ChaptersScreen() {
 
                 <div className="grid grid-cols-4 gap-4">
                     {Array.from({ length: 30 }, (_, i) => {
-                        const { isCompleted, isUnlocked } = getLevelStatus(i)
+                        const { isCompleted, isUnlocked, progress } = getLevelStatus(i)
 
                         return (
                             <motion.button
@@ -82,7 +103,14 @@ export default function ChaptersScreen() {
                                         <span className="text-[10px] uppercase tracking-tighter opacity-70">Tamam</span>
                                     </div>
                                 ) : isUnlocked ? (
-                                    <span>{i + 1}</span>
+                                    <div className="flex flex-col items-center">
+                                        <span>{i + 1}</span>
+                                        {progress > 0 && (
+                                            <div className="absolute bottom-1 px-2 py-0.5 bg-black/30 rounded-full">
+                                                <span className="text-[9px] font-black leading-none text-white/90">%{progress}</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
                                     <svg className="w-6 h-6 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
