@@ -82,10 +82,11 @@ export default function LevelsScreen() {
                                 </div>
 
                                 {/* Progress Bar Container */}
-                                <div className="w-full h-2 bg-black/40 rounded-full overflow-hidden shrink-0 mt-2">
+                                <div style={{ marginTop: '1rem' }} className="w-full h-2 bg-black/40 rounded-full overflow-hidden shrink-0 mt-2">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${percent}%` }}
+
                                         transition={{ duration: 1, ease: 'easeOut' }}
                                         className={`h-full bg-gradient-to-r ${level.color}`}
                                     />
