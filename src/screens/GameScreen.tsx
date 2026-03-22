@@ -93,7 +93,18 @@ export default function GameScreen() {
 
         if (actualPuzzle) {
             setPuzzleData(actualPuzzle)
-            resetGame(actualPuzzle as Difficulty | any)
+
+            // HER BULMACA İÇİN AYRI KAYIT KONTROLÜ
+            const state = useGameStore.getState()
+            const hasSavedProgress = !!state.savedStates[actualPuzzle.id]
+
+            if (hasSavedProgress) {
+                // Eğer bu bulmaca için daha önceden kaydedilmiş veri varsa geri yükle
+                state.resumeSavedGame(actualPuzzle)
+            } else {
+                // Yeni bir oyun başlat
+                resetGame(actualPuzzle as Difficulty | any)
+            }
         }
     }, [difficulty, chapter, puzzleId, resetGame])
 

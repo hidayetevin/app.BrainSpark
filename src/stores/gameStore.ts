@@ -1,34 +1,5 @@
 /**
  * Brain Spark – Global Game Store (Zustand)
- *
- * Mimari Kararlar:
- * ─────────────────────────────────────────────────────────────────────────────
- * 1. CELL-LEVEL SUBSCRIPTION:
- *    Her hücre `useGameStore(state => state.grid[cellIndex])` ile sadece
- *    kendi değerine abone olur. Parent 81 elemanlı diziye abone olmaz.
- *    Cell component `React.memo` ile sarılır → tek hücre güncellemesi
- *    yalnızca o hücreyi render eder. Input latency hedefi: <16ms.
- *
- * 2. PERSIST MIDDLEWARE:
- *    `partialize` ile yalnızca kalıcı alanlar diske yazılır:
- *    puzzleStats, streak, lastChallengeDate, adsDisabled, savedState.
- *    Geçici UI state (isPaused, isCompleted, selectedCell, highlights)
- *    persist edilmez.
- *
- * 3. SET SERİALİZASYON:
- *    `notes: Set<number>[]`, JSON'a serialize edilemez. `partialize`
- *    aşamasında `Set → number[]` dönüşümü yapılır; `merge` aşamasında
- *    `number[] → Set` geri dönüştürülür.
- *
- * 4. CRASH PROTECTION (Auto-Save):
- *    Her `placeNumber` çağrısında state Preferences'a arka planda
- *    yazılır. `await` kullanılmaz — oyun akışını bloklamaz.
- *    En kötü senaryoda oyuncu 1 hamle kaybeder.
- *
- * 5. STATE KAYNAKLAR ARASI ÖNCELIK:
- *    IAP doğrulaması (store) → `adsDisabled` flag → yerel depolama
- *    (store doğrulaması her zaman önceliklidir).
- * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { create } from 'zustand'
@@ -50,12 +21,10 @@ const INITIAL_LIVES = 3
 
 // ─── Serialization Helpers ───────────────────────────────────────────────────
 
-/** Set<number>[] → number[][] (persist için) */
 function serializeNotes(notes: Set<number>[]): number[][] {
     return notes.map(s => Array.from(s))
 }
 
-/** number[][] → Set<number>[] (rehydrate için) */
 function deserializeNotes(raw: number[][]): Set<number>[] {
     return raw.map(arr => new Set<number>(arr))
 }
@@ -79,7 +48,7 @@ const defaultPersistedSlice: PersistedSlice = {
     lastTrustedTime: 0,
     adsDisabled: false,
     coins: 0,
-    savedState: null,
+    savedStates: {},
 }
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -114,35 +83,39 @@ export const useGameStore = create<GameState>()(
             // ACTIONS
             // ────────────────────────────────────────────────────────────
 
-            /**
-             * placeNumber — Hücreye sayı yaz.
-             * Performans: Yalnızca `grid[cellIndex]` değiştirilir → o hücre render edilir.
-             * Crash protection: Arka planda sessionStorage'a asenkron yazar.
-             */
             placeNumber: (cellIndex: number, value: number) => {
                 set(state => {
                     const newGrid = state.grid.slice()
                     newGrid[cellIndex] = value
-                    return { grid: newGrid }
+
+                    // OTOMATİK KAYIT (CRASH PROTECTION):
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: newGrid,
+                        notes: serializeNotes(state.notes),
+                        lives: state.lives,
+                        elapsedTime: state.elapsedTime
+                    }
+
+                    // Disk crash protection için (opsiyonel ama güvenli)
+                    void saveToCrashProtection(JSON.stringify(currentSave))
+
+                    return {
+                        grid: newGrid,
+                        // Persist middleware'in yakalaması için savedStates'i güncelle
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
                 })
-
-                // Crash protection: fire-and-forget, await YOK
-                const state = get()
-                const payload = JSON.stringify({
-                    difficulty: state.difficulty,
-                    chapter: state.chapter,
-                    grid: state.grid, // set() zaten çalıştı, get() güncel değer döndürür
-                    notes: serializeNotes(state.notes),
-                    lives: state.lives,
-                    elapsedTime: state.elapsedTime,
-                } satisfies SavedGameState)
-
-                void saveToCrashProtection(payload)
             },
 
             removeNumber: (cellIndex: number) => {
                 set(state => {
-                    // Başlangıç hücresi silinemez
                     if (state.initialGrid[cellIndex] !== 0) return state
 
                     const newGrid = state.grid.slice()
@@ -151,19 +124,30 @@ export const useGameStore = create<GameState>()(
                     const newNotes = state.notes.slice()
                     newNotes[cellIndex] = new Set<number>()
 
-                    return { grid: newGrid, notes: newNotes }
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: newGrid,
+                        notes: serializeNotes(newNotes),
+                        lives: state.lives,
+                        elapsedTime: state.elapsedTime
+                    }
+
+                    return {
+                        grid: newGrid,
+                        notes: newNotes,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
                 })
             },
 
-            /**
-             * toggleNote — Kalem modu: not ekle/kaldır.
-             * Auto Candidate Clean (PROMPT 3'te SudokuEngine hook ile entegre edilecek):
-             * Doğru sayı yerleştirildiğinde aynı satır/sütun/bloktan o not silinir.
-             * Şimdilik yalnızca toggle mantığı uygulanır.
-             */
             toggleNote: (cellIndex: number, value: number) => {
                 set(state => {
-                    // Hücre doluysa not eklenemiyor
                     if (state.grid[cellIndex] !== 0) return state
 
                     const newNotes = state.notes.slice()
@@ -176,19 +160,74 @@ export const useGameStore = create<GameState>()(
                     }
 
                     newNotes[cellIndex] = cellNotes
-                    return { notes: newNotes }
+
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: state.grid,
+                        notes: serializeNotes(newNotes),
+                        lives: state.lives,
+                        elapsedTime: state.elapsedTime
+                    }
+
+                    return {
+                        notes: newNotes,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
                 })
             },
 
             decreaseLives: () => {
-                set(state => ({
-                    lives: Math.max(0, state.lives - 1),
-                    mistakes: state.mistakes + 1,
-                }))
+                set(state => {
+                    const newLives = Math.max(0, state.lives - 1)
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: state.grid,
+                        notes: serializeNotes(state.notes),
+                        lives: newLives,
+                        elapsedTime: state.elapsedTime
+                    }
+
+                    return {
+                        lives: newLives,
+                        mistakes: state.mistakes + 1,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
+                })
             },
 
             setLives: (lives: number) => {
-                set({ lives })
+                set(state => {
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: state.grid,
+                        notes: serializeNotes(state.notes),
+                        lives: lives,
+                        elapsedTime: state.elapsedTime
+                    }
+                    return {
+                        lives,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
+                })
             },
 
             setAdsDisabled: (value: boolean) => {
@@ -212,7 +251,6 @@ export const useGameStore = create<GameState>()(
 
                 let newStreak = 1
                 if (state.lastChallengeClaimDate) {
-                    // Sadece tarihleri karşılaştırarak saat farkının ceil yüzünden artmasını önle
                     const lastDateMidnight = new Date(state.lastChallengeClaimDate + 'T00:00:00')
                     const todayMidnight = new Date(today + 'T00:00:00')
 
@@ -222,7 +260,7 @@ export const useGameStore = create<GameState>()(
                     if (diffDays === 1) {
                         newStreak = state.streak + 1
                     } else if (diffDays > 1) {
-                        newStreak = 1 // Streak koptu
+                        newStreak = 1
                     } else if (diffDays === 0) {
                         newStreak = state.streak
                     }
@@ -266,7 +304,30 @@ export const useGameStore = create<GameState>()(
             },
 
             setElapsedTime: (time: number) => {
-                set({ elapsedTime: time })
+                set(state => {
+                    // Performans için her saniye kaydedilmez; ancak kritik durumlarda veya düzenli persist ile disk senkronize olur.
+                    // İstendiği için her saniye savedStates'e basıyoruz:
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    if (state.isCompleted) return { elapsedTime: time }
+
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: state.grid,
+                        notes: serializeNotes(state.notes),
+                        lives: state.lives,
+                        elapsedTime: time
+                    }
+
+                    return {
+                        elapsedTime: time,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
+                })
             },
 
             setStars: (stars: number) => {
@@ -277,10 +338,6 @@ export const useGameStore = create<GameState>()(
                 set(state => ({ hintsUsed: state.hintsUsed + 1 }))
             },
 
-            /**
-             * removeValueFromNotes — Belirtilen hücrelerin notlarından `value`i siler.
-             * Auto-candidate clean (aynı satır/sütun/bloktan kalemi silme) için kullanılır.
-             */
             removeValueFromNotes: (cells: number[], value: number) => {
                 set(state => {
                     let changed = false
@@ -295,7 +352,26 @@ export const useGameStore = create<GameState>()(
                         }
                     })
 
-                    return changed ? { notes: newNotes } : state
+                    if (!changed) return state
+
+                    const puzzleId = `${state.difficulty}_${state.chapter.toString().padStart(3, '0')}`
+                    const currentSave: SavedGameState = {
+                        puzzleId,
+                        difficulty: state.difficulty,
+                        chapter: state.chapter,
+                        grid: state.grid,
+                        notes: serializeNotes(newNotes),
+                        lives: state.lives,
+                        elapsedTime: state.elapsedTime
+                    }
+
+                    return {
+                        notes: newNotes,
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: currentSave
+                        }
+                    }
                 })
             },
 
@@ -315,9 +391,6 @@ export const useGameStore = create<GameState>()(
                 })
             },
 
-            /**
-             * resetGame — Yeni bulmaca yükler; persist edilmeyen alanları sıfırlar.
-             */
             resetGame: (puzzleData: PuzzleData) => {
                 set({
                     grid: puzzleData.initialBoard.slice(),
@@ -336,27 +409,28 @@ export const useGameStore = create<GameState>()(
                     selectedCell: null,
                     pencilMode: false,
                     errorCells: [],
-                    savedState: null // Yeni oyun başlayınca öncekini sil
                 })
             },
 
             resumeSavedGame: (puzzleData: PuzzleData) => {
                 const state = get()
-                if (!state.savedState) {
-                    state.resetGame(puzzleData) // Saved state yoksa reset at
+                const puzzleId = puzzleData.id
+                const saved = state.savedStates[puzzleId]
+
+                if (!saved) {
+                    state.resetGame(puzzleData)
                     return
                 }
 
                 set({
                     initialGrid: puzzleData.initialBoard.slice(),
                     solutionGrid: puzzleData.solutionBoard.slice(),
-                    grid: state.savedState.grid,
-                    notes: deserializeNotes(state.savedState.notes),
-                    difficulty: state.savedState.difficulty,
-                    chapter: state.savedState.chapter,
-                    lives: state.savedState.lives,
-                    elapsedTime: state.savedState.elapsedTime,
-                    // Diğer istatistikleri koru
+                    grid: [...saved.grid],
+                    notes: deserializeNotes(saved.notes),
+                    difficulty: saved.difficulty,
+                    chapter: saved.chapter,
+                    lives: saved.lives,
+                    elapsedTime: saved.elapsedTime,
                     isPaused: false,
                     isCompleted: false,
                     selectedCell: null,
@@ -364,46 +438,35 @@ export const useGameStore = create<GameState>()(
                 })
             },
 
-            /**
-             * saveGame — Mevcut oyun state'ini `savedState` alanına yazar.
-             * Lifecycle hook (arka plana alma) tarafından çağrılır.
-             */
             saveGame: () => {
-                const state = get()
-                const savedState: SavedGameState = {
-                    difficulty: state.difficulty,
-                    chapter: state.chapter,
-                    grid: state.grid,
-                    notes: serializeNotes(state.notes),
-                    lives: state.lives,
-                    elapsedTime: state.elapsedTime,
-                }
-                set({ savedState })
-                // persist middleware bunu yakında diske yazar
+                // Bu fonksiyon manuel tetikleme içindir.
+                // Biz her hamlede (placeNumber vb.) savedStates'i güncellediğimiz için
+                // persist middleware zaten anlık veriyi tutuyor.
             },
 
-            /**
-             * loadSavedGame — Crash protection key'inden kayıtlı oyunu yükler.
-             * `true` döndürürse yükleme başarılı (GameScreen'e devam et).
-             */
+            clearSavedState: (puzzleId: string) => {
+                set(state => {
+                    const newSavedStates = { ...state.savedStates }
+                    delete newSavedStates[puzzleId]
+                    return { savedStates: newSavedStates }
+                })
+            },
+
             loadSavedGame: async (): Promise<boolean> => {
+                // Crash protection recovery (opsiyonel)
                 try {
                     const raw = await loadFromCrashProtection()
                     if (!raw) return false
-
                     const saved = JSON.parse(raw) as SavedGameState
                     if (!saved.grid || saved.grid.length !== 81) return false
 
-                    set({
-                        difficulty: saved.difficulty,
-                        chapter: saved.chapter,
-                        grid: saved.grid,
-                        notes: deserializeNotes(saved.notes),
-                        lives: saved.lives,
-                        elapsedTime: saved.elapsedTime,
-                        isPaused: true, // Devam ederken duraklatılmış gelir
-                    })
-
+                    const puzzleId = saved.puzzleId
+                    set(state => ({
+                        savedStates: {
+                            ...state.savedStates,
+                            [puzzleId]: saved
+                        }
+                    }))
                     return true
                 } catch {
                     return false
@@ -411,16 +474,9 @@ export const useGameStore = create<GameState>()(
             },
         }),
 
-        // ── Persist Middleware Config ──────────────────────────────────────────────
         {
-            name: 'brain-spark-store',
+            name: 'brain-spark-store-v2', // Versiyon değiştiği için map'li yeni storage
             storage: capacitorStorage,
-
-            /**
-             * partialize — Disk'e yazılacak alanları filtreler.
-             * notes: Set<number>[] → number[][] dönüşümü burada yapılır.
-             * Geçici state (isPaused, isCompleted, selectedCell, errorCells, vb) DIŞARDA bırakılır.
-             */
             partialize: (state): PersistedSlice => ({
                 settings: state.settings,
                 puzzleStats: state.puzzleStats,
@@ -429,25 +485,11 @@ export const useGameStore = create<GameState>()(
                 lastTrustedTime: state.lastTrustedTime,
                 adsDisabled: state.adsDisabled,
                 coins: state.coins,
-                savedState: state.grid.some(v => v !== 0)
-                    ? {
-                        difficulty: state.difficulty,
-                        chapter: state.chapter,
-                        grid: state.grid,
-                        notes: serializeNotes(state.notes),
-                        lives: state.lives,
-                        elapsedTime: state.elapsedTime,
-                    }
-                    : null,
+                savedStates: state.savedStates,
             }),
-
-            /**
-             * merge — Diskten okunan state ile in-memory default'ları birleştirir.
-             * notes: number[][] → Set<number>[] dönüşümü burada yapılır.
-             */
             merge: (persistedState, currentState) => {
                 const ps = persistedState as PersistedSlice
-                const merged: GameState = {
+                return {
                     ...currentState,
                     settings: { ...currentState.settings, ...(ps.settings || {}) },
                     puzzleStats: ps.puzzleStats ?? currentState.puzzleStats,
@@ -456,47 +498,20 @@ export const useGameStore = create<GameState>()(
                     lastTrustedTime: ps.lastTrustedTime ?? currentState.lastTrustedTime,
                     adsDisabled: ps.adsDisabled ?? currentState.adsDisabled,
                     coins: ps.coins ?? currentState.coins,
-                    savedState: ps.savedState ?? null,
+                    savedStates: ps.savedStates ?? {},
                 }
-
-                // Eğer kayıtlı oyun varsa in-memory state'e de yükle
-                if (ps.savedState) {
-                    merged.difficulty = ps.savedState.difficulty
-                    merged.chapter = ps.savedState.chapter
-                    merged.grid = ps.savedState.grid
-                    merged.notes = deserializeNotes(ps.savedState.notes)
-                    merged.lives = ps.savedState.lives
-                    merged.elapsedTime = ps.savedState.elapsedTime
-                }
-
-                return merged
             },
-
-            version: 1,
+            version: 2,
         },
     ),
 )
 
-// ─── Convenience Selectors ───────────────────────────────────────────────────
-// Bu selector'lar, her bileşenin kendi performans kaygısı olmadan
-// doğru şekilde subscribe olmasını sağlar.
-
-/**
- * useCellValue — Tek hücrenin değerine abone olur.
- * `React.memo` ile sarılmış Cell bileşeninde kullanılır.
- * Performans: Sadece kendi değeri değiştiğinde re-render.
- */
+// Selector helpers
 export const useCellValue = (cellIndex: number): number =>
     useGameStore(state => state.grid[cellIndex])
 
-/**
- * useCellNotes — Tek hücrenin notlarına abone olur.
- */
 export const useCellNotes = (cellIndex: number): Set<number> =>
     useGameStore(state => state.notes[cellIndex])
 
-/**
- * useIsInitialCell — Hücrenin başlangıç değeri olup olmadığını döndürür.
- */
 export const useIsInitialCell = (cellIndex: number): boolean =>
     useGameStore(state => state.initialGrid[cellIndex] !== 0)

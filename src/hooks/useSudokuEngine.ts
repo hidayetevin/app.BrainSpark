@@ -86,6 +86,10 @@ export function useSudokuEngine(puzzleData: PuzzleData | null): UseSudokuEngineR
         // Ödül: Her galibiyet için 5 coin
         store.addCoins(5)
 
+        // Kayıtlı ilerlemeyi temizle (Bölüm bitti)
+        const pid = `${store.difficulty}_${store.chapter.toString().padStart(3, '0')}`
+        store.clearSavedState(pid)
+
         store.setCompleted(true)
         AudioService.playSuccess()
         if (store.settings.vibrationEnabled) {

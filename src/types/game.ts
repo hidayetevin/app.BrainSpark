@@ -40,6 +40,7 @@ export type PuzzleStatsMap = Record<string, PuzzleStats>
  * Capacitor Preferences'a yazılan oyun snapshot'ı.
  */
 export interface SavedGameState {
+    puzzleId: string
     difficulty: Difficulty
     chapter: number
     grid: number[]
@@ -48,6 +49,11 @@ export interface SavedGameState {
     lives: number
     elapsedTime: number
 }
+
+/**
+ * Puzzle ID -> Bekleyen Oyun Durumu
+ */
+export type SavedStatesMap = Record<string, SavedGameState>
 
 // ─── Store Slice (Persisted) ─────────────────────────────────────────────────
 
@@ -76,8 +82,8 @@ export interface PersistedSlice {
     lastTrustedTime: number
     adsDisabled: boolean
     coins: number
-    /** Son aktif oyun; null ise aktif oyun yok */
-    savedState: SavedGameState | null
+    /** PuzzleID bazlı kaydedilmiş oyunlar */
+    savedStates: SavedStatesMap
 }
 
 // ─── Game Store State ─────────────────────────────────────────────────────────
@@ -95,7 +101,7 @@ export interface GameState extends PersistedSlice {
     difficulty: Difficulty
     chapter: number
 
-    // ── Me ta ─────────────────────────────────────────────────────
+    // ── Meta ─────────────────────────────────────────────────────
     lives: number
     mistakes: number
     hintsUsed: number
@@ -139,6 +145,8 @@ export interface GameState extends PersistedSlice {
     resumeSavedGame: (puzzleData: PuzzleData) => void
     /** Mevcut oyun state'ini arka planda Preferences'a yazar */
     saveGame: () => void
+    /** Mevcut bulmaca için kaydedilmiş state'i temizler (oyun bitince çağrılır) */
+    clearSavedState: (puzzleId: string) => void
     /** Kayıtlı state'i store'a yükler (uygulama başlangıcında çağrılır) */
     loadSavedGame: () => Promise<boolean>
 }
