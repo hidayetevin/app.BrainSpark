@@ -1,10 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'com.hidayetevin.brainspark',
+    appId: 'com.evnlabs.brainspark',
     appName: 'Brain Spark',
     webDir: 'dist',
-    bundledWebRuntime: false,
     server: {
         androidScheme: 'https'
     },

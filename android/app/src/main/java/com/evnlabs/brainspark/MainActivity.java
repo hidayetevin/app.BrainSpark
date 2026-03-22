@@ -1,4 +1,4 @@
-package com.hidayetevin.brainspark;
+package com.evnlabs.brainspark;
 
 import com.getcapacitor.BridgeActivity;
 

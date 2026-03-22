@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Brain Spark</string>
     <string name="title_activity_main">Brain Spark</string>
-    <string name="package_name">com.hidayetevin.brainspark</string>
-    <string name="custom_url_scheme">com.hidayetevin.brainspark</string>
+    <string name="package_name">com.evnlabs.brainspark</string>
+    <string name="custom_url_scheme">com.evnlabs.brainspark</string>
 </resources>
