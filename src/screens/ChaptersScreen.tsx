@@ -103,11 +103,11 @@ export default function ChaptersScreen() {
                                         <span className="text-[10px] uppercase tracking-tighter opacity-70">Tamam</span>
                                     </div>
                                 ) : isUnlocked ? (
-                                    <div className="flex flex-col items-center">
-                                        <span>{i + 1}</span>
-                                        {progress > 0 && (
-                                            <div className="absolute bottom-1 px-2 py-0.5 bg-black/30 rounded-full">
-                                                <span className="text-[9px] font-black leading-none text-white/90">%{progress}</span>
+                                    <div className=" flex flex-col items-center justify-center w-full h-full">
+                                        <span className={progress > 0 ? "mb-2" : ""}>{i + 1}</span>
+                                        {(
+                                            <div className="h-5 absolute inset-x-0 bottom-0 py-1.5 bg-black/30 backdrop-blur-md border-t border-white/10 rounded-b-2xl flex items-center justify-center">
+                                                <span className="text-[10px] font-black leading-none text-cyan-300 drop-shadow-sm">%{progress}</span>
                                             </div>
                                         )}
                                     </div>
