@@ -131,7 +131,7 @@ export default function HomeScreen() {
                 </motion.div>
 
                 <p className="text-center text-[10px] text-slate-500 font-medium pb-2 opacity-50">
-                    Brain Spark v1.0.1
+                    Brain Spark v1.0.2
                 </p>
             </div>
         </ScreenTransition>
